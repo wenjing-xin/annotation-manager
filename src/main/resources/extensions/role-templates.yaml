@@ -1,0 +1,63 @@
+apiVersion: v1alpha1
+kind: Role
+metadata:
+  name: role-template-annotation-manager-metadata-view
+  labels:
+    halo.run/role-template: "true"
+  annotations:
+    rbac.authorization.halo.run/module: "元数据字段管家"
+    rbac.authorization.halo.run/display-name: "查看元数据字段"
+    rbac.authorization.halo.run/ui-permissions: |
+      ["plugin:annotation-manager:metadata:view"]
+rules:
+  - apiGroups: ["api.annotation-manager.wenjing.com"]
+    resources:
+      - "annotation-fields"
+      - "annotation-conflicts"
+      - "annotation-values/scan"
+    verbs: ["get", "list", "create"]
+  - apiGroups:
+      - "v1alpha1"
+      - "content.halo.run"
+      - "plugin.halo.run"
+    resources:
+      - "annotationsettings"
+      - "posts"
+      - "singlepages"
+      - "categories"
+      - "tags"
+      - "plugins"
+      - "configmaps"
+    verbs: ["get", "list"]
+---
+apiVersion: v1alpha1
+kind: Role
+metadata:
+  name: role-template-annotation-manager-metadata-manage
+  labels:
+    halo.run/role-template: "true"
+  annotations:
+    rbac.authorization.halo.run/module: "元数据字段管家"
+    rbac.authorization.halo.run/display-name: "管理元数据字段"
+    rbac.authorization.halo.run/dependencies: |
+      ["role-template-annotation-manager-metadata-view"]
+    rbac.authorization.halo.run/ui-permissions: |
+      ["plugin:annotation-manager:metadata:manage"]
+rules:
+  - apiGroups: ["api.annotation-manager.wenjing.com"]
+    resources:
+      - "annotation-settings/delete-preview"
+      - "annotation-settings/delete"
+      - "annotation-values/cleanup-preview"
+      - "annotation-values/cleanup"
+    verbs: ["create", "update"]
+  - apiGroups:
+      - "v1alpha1"
+      - "content.halo.run"
+    resources:
+      - "annotationsettings"
+      - "posts"
+      - "singlepages"
+      - "categories"
+      - "tags"
+    verbs: ["get", "list", "update", "delete"]

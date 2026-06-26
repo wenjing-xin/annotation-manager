@@ -1,0 +1,22 @@
+# Refer https://docs.halo.run/developer-guide/plugin/basics/manifest
+
+apiVersion: plugin.halo.run/v1alpha1
+kind: Plugin
+metadata:
+  # The name defines how the plugin is invoked, A unique name
+  name: annotation-manager
+spec:
+  enabled: true
+  requires: ">=2.25.0"
+  author:
+    name: webjing
+    website: https://github.com/webjing
+  logo: logo.png
+  homepage: https://github.com/webjing/annotation-manager#readme
+  repo: https://github.com/webjing/annotation-manager
+  issues: https://github.com/webjing/annotation-manager/issues
+  displayName: "元数据字段管家"
+  description: "annotation-manager - Halo 插件"
+  license:
+    - name: "GPL-3.0"
+      url: "https://github.com/webjing/annotation-manager/blob/main/LICENSE"

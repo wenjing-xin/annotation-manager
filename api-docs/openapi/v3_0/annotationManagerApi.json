@@ -1,0 +1,612 @@
+{
+  "openapi" : "3.0.1",
+  "info" : {
+    "title" : "Halo",
+    "version" : "2.25.3"
+  },
+  "servers" : [ {
+    "url" : "http://localhost:8090",
+    "description" : "Generated server url"
+  } ],
+  "security" : [ {
+    "basicAuth" : [ ],
+    "bearerAuth" : [ ]
+  } ],
+  "paths" : {
+    "/apis/api.annotation-manager.wenjing.com/v1alpha1/annotation-conflicts" : {
+      "get" : {
+        "description" : "List duplicate annotation metadata field definitions.",
+        "operationId" : "ListAnnotationConflicts",
+        "responses" : {
+          "default" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "type" : "array",
+                  "items" : {
+                    "$ref" : "#/components/schemas/AnnotationConflictVo"
+                  }
+                }
+              }
+            },
+            "description" : "default response"
+          }
+        },
+        "tags" : [ "api.annotation-manager.wenjing.com/v1alpha1/AnnotationMetadata" ]
+      }
+    },
+    "/apis/api.annotation-manager.wenjing.com/v1alpha1/annotation-fields" : {
+      "get" : {
+        "description" : "List parsed annotation metadata field definitions.",
+        "operationId" : "ListAnnotationFields",
+        "responses" : {
+          "default" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "type" : "array",
+                  "items" : {
+                    "$ref" : "#/components/schemas/AnnotationFieldDefinition"
+                  }
+                }
+              }
+            },
+            "description" : "default response"
+          }
+        },
+        "tags" : [ "api.annotation-manager.wenjing.com/v1alpha1/AnnotationMetadata" ]
+      }
+    },
+    "/apis/api.annotation-manager.wenjing.com/v1alpha1/annotation-settings/{name}/delete" : {
+      "post" : {
+        "description" : "Delete a duplicate AnnotationSetting after explicit confirmation.",
+        "operationId" : "DeleteDuplicateAnnotationSetting",
+        "parameters" : [ {
+          "in" : "path",
+          "name" : "name",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "requestBody" : {
+          "content" : {
+            "*/*" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/DeleteSettingRequest"
+              }
+            }
+          }
+        },
+        "responses" : {
+          "default" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/CleanupResultVo"
+                }
+              }
+            },
+            "description" : "default response"
+          }
+        },
+        "tags" : [ "api.annotation-manager.wenjing.com/v1alpha1/AnnotationMetadata" ]
+      }
+    },
+    "/apis/api.annotation-manager.wenjing.com/v1alpha1/annotation-settings/{name}/delete-preview" : {
+      "post" : {
+        "description" : "Preview deleting a duplicate AnnotationSetting.",
+        "operationId" : "PreviewDeleteAnnotationSetting",
+        "parameters" : [ {
+          "in" : "path",
+          "name" : "name",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "default" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/DeleteSettingPreviewVo"
+                }
+              }
+            },
+            "description" : "default response"
+          }
+        },
+        "tags" : [ "api.annotation-manager.wenjing.com/v1alpha1/AnnotationMetadata" ]
+      }
+    },
+    "/apis/api.annotation-manager.wenjing.com/v1alpha1/annotation-values/cleanup" : {
+      "post" : {
+        "description" : "Clean one stored annotation key after explicit confirmation.",
+        "operationId" : "CleanupAnnotationValues",
+        "requestBody" : {
+          "content" : {
+            "*/*" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/CleanupRequest"
+              }
+            }
+          }
+        },
+        "responses" : {
+          "default" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/CleanupResultVo"
+                }
+              }
+            },
+            "description" : "default response"
+          }
+        },
+        "tags" : [ "api.annotation-manager.wenjing.com/v1alpha1/AnnotationMetadata" ]
+      }
+    },
+    "/apis/api.annotation-manager.wenjing.com/v1alpha1/annotation-values/cleanup-preview" : {
+      "post" : {
+        "description" : "Preview cleanup of one stored annotation key on supported content models.",
+        "operationId" : "PreviewCleanupAnnotationValues",
+        "requestBody" : {
+          "content" : {
+            "*/*" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/CleanupRequest"
+              }
+            }
+          }
+        },
+        "responses" : {
+          "default" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/CleanupPreviewVo"
+                }
+              }
+            },
+            "description" : "default response"
+          }
+        },
+        "tags" : [ "api.annotation-manager.wenjing.com/v1alpha1/AnnotationMetadata" ]
+      }
+    },
+    "/apis/api.annotation-manager.wenjing.com/v1alpha1/annotation-values/scan" : {
+      "post" : {
+        "description" : "Scan stored metadata.annotations values on supported content models.",
+        "operationId" : "ScanAnnotationValues",
+        "requestBody" : {
+          "content" : {
+            "*/*" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/AnnotationValueScanRequest"
+              }
+            }
+          }
+        },
+        "responses" : {
+          "default" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/AnnotationValueUsageVo"
+                }
+              }
+            },
+            "description" : "default response"
+          }
+        },
+        "tags" : [ "api.annotation-manager.wenjing.com/v1alpha1/AnnotationMetadata" ]
+      }
+    }
+  },
+  "components" : {
+    "schemas" : {
+      "AddOperation" : {
+        "required" : [ "op", "path", "value" ],
+        "type" : "object",
+        "properties" : {
+          "op" : {
+            "type" : "string",
+            "enum" : [ "add" ]
+          },
+          "path" : {
+            "pattern" : "^(/[^/~]*(~[01][^/~]*)*)*$",
+            "type" : "string",
+            "description" : "A JSON Pointer path pointing to the location to move/copy from.",
+            "example" : "/a/b/c"
+          },
+          "value" : {
+            "description" : "Value can be any JSON value"
+          }
+        }
+      },
+      "AnnotationConflictVo" : {
+        "type" : "object",
+        "properties" : {
+          "annotationKey" : {
+            "type" : "string"
+          },
+          "conflictKey" : {
+            "type" : "string"
+          },
+          "definitions" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/AnnotationFieldDefinition"
+            }
+          },
+          "targetRef" : {
+            "type" : "string"
+          }
+        },
+        "description" : "Annotation field definition conflict grouped by targetRef and annotation key."
+      },
+      "AnnotationFieldDefinition" : {
+        "type" : "object",
+        "properties" : {
+          "annotationKey" : {
+            "type" : "string"
+          },
+          "annotationSettingName" : {
+            "type" : "string"
+          },
+          "confidence" : {
+            "type" : "string"
+          },
+          "duplicate" : {
+            "type" : "boolean"
+          },
+          "effective" : {
+            "type" : "boolean"
+          },
+          "help" : {
+            "type" : "string"
+          },
+          "inputType" : {
+            "type" : "string"
+          },
+          "label" : {
+            "type" : "string"
+          },
+          "sourceName" : {
+            "type" : "string"
+          },
+          "sourceType" : {
+            "type" : "string"
+          },
+          "targetRef" : {
+            "type" : "string"
+          },
+          "validation" : {
+            "type" : "string"
+          }
+        },
+        "description" : "Parsed annotation metadata field definition."
+      },
+      "AnnotationValueScanRequest" : {
+        "type" : "object",
+        "properties" : {
+          "annotationKey" : {
+            "type" : "string"
+          },
+          "sampleSize" : {
+            "type" : "integer",
+            "format" : "int32"
+          },
+          "targetRef" : {
+            "type" : "string"
+          }
+        },
+        "description" : "Request for scanning stored annotation values."
+      },
+      "AnnotationValueUsageVo" : {
+        "type" : "object",
+        "properties" : {
+          "annotationKey" : {
+            "type" : "string"
+          },
+          "resourcesWithKey" : {
+            "type" : "integer",
+            "format" : "int32"
+          },
+          "resourcesWithNonEmptyValue" : {
+            "type" : "integer",
+            "format" : "int32"
+          },
+          "sampleResourceNames" : {
+            "type" : "array",
+            "items" : {
+              "type" : "string"
+            }
+          },
+          "sampleValues" : {
+            "type" : "object",
+            "additionalProperties" : {
+              "type" : "string"
+            }
+          },
+          "targetRef" : {
+            "type" : "string"
+          },
+          "totalResources" : {
+            "type" : "integer",
+            "format" : "int32"
+          }
+        },
+        "description" : "Stored annotation value usage statistics."
+      },
+      "BackupVo" : {
+        "type" : "object",
+        "properties" : {
+          "annotationKey" : {
+            "type" : "string"
+          },
+          "generatedAt" : {
+            "type" : "string"
+          },
+          "items" : {
+            "type" : "array",
+            "items" : {
+              "type" : "object",
+              "additionalProperties" : {
+                "type" : "object"
+              }
+            }
+          },
+          "operation" : {
+            "type" : "string"
+          },
+          "targetRef" : {
+            "type" : "string"
+          }
+        },
+        "description" : "JSON backup payload generated before destructive cleanup."
+      },
+      "CleanupPreviewVo" : {
+        "type" : "object",
+        "properties" : {
+          "annotationKey" : {
+            "type" : "string"
+          },
+          "backup" : {
+            "$ref" : "#/components/schemas/BackupVo"
+          },
+          "resourcesWithKey" : {
+            "type" : "integer",
+            "format" : "int32"
+          },
+          "resourcesWithNonEmptyValue" : {
+            "type" : "integer",
+            "format" : "int32"
+          },
+          "sampleResourceNames" : {
+            "type" : "array",
+            "items" : {
+              "type" : "string"
+            }
+          },
+          "sampleValues" : {
+            "type" : "object",
+            "additionalProperties" : {
+              "type" : "string"
+            }
+          },
+          "targetRef" : {
+            "type" : "string"
+          },
+          "totalResources" : {
+            "type" : "integer",
+            "format" : "int32"
+          }
+        },
+        "description" : "Cleanup preview including usage statistics and JSON backup."
+      },
+      "CleanupRequest" : {
+        "type" : "object",
+        "properties" : {
+          "annotationKey" : {
+            "type" : "string"
+          },
+          "confirmedAnnotationKey" : {
+            "type" : "string"
+          },
+          "targetRef" : {
+            "type" : "string"
+          }
+        },
+        "description" : "Request for previewing or executing stored annotation value cleanup."
+      },
+      "CleanupResultVo" : {
+        "type" : "object",
+        "properties" : {
+          "annotationKey" : {
+            "type" : "string"
+          },
+          "backup" : {
+            "$ref" : "#/components/schemas/BackupVo"
+          },
+          "targetRef" : {
+            "type" : "string"
+          },
+          "updatedResources" : {
+            "type" : "integer",
+            "format" : "int32"
+          }
+        },
+        "description" : "Result returned after destructive cleanup."
+      },
+      "CopyOperation" : {
+        "required" : [ "op", "from", "path" ],
+        "type" : "object",
+        "properties" : {
+          "from" : {
+            "pattern" : "^(/[^/~]*(~[01][^/~]*)*)*$",
+            "type" : "string",
+            "description" : "A JSON Pointer path pointing to the location to move/copy from.",
+            "example" : "/a/b/c"
+          },
+          "op" : {
+            "type" : "string",
+            "enum" : [ "copy" ]
+          },
+          "path" : {
+            "pattern" : "^(/[^/~]*(~[01][^/~]*)*)*$",
+            "type" : "string",
+            "description" : "A JSON Pointer path pointing to the location to move/copy from.",
+            "example" : "/a/b/c"
+          }
+        }
+      },
+      "DeleteSettingPreviewVo" : {
+        "type" : "object",
+        "properties" : {
+          "annotationSettingName" : {
+            "type" : "string"
+          },
+          "backup" : {
+            "$ref" : "#/components/schemas/BackupVo"
+          },
+          "definitions" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/AnnotationFieldDefinition"
+            }
+          },
+          "duplicate" : {
+            "type" : "boolean"
+          },
+          "warnings" : {
+            "type" : "array",
+            "items" : {
+              "type" : "string"
+            }
+          }
+        },
+        "description" : "Preview for deleting a duplicate AnnotationSetting."
+      },
+      "DeleteSettingRequest" : {
+        "type" : "object",
+        "properties" : {
+          "confirmedName" : {
+            "type" : "string"
+          }
+        },
+        "description" : "Request for deleting a duplicate AnnotationSetting."
+      },
+      "JsonPatch" : {
+        "minItems" : 1,
+        "uniqueItems" : true,
+        "type" : "array",
+        "description" : "JSON schema for JSONPatch operations",
+        "items" : {
+          "oneOf" : [ {
+            "$ref" : "#/components/schemas/AddOperation"
+          }, {
+            "$ref" : "#/components/schemas/ReplaceOperation"
+          }, {
+            "$ref" : "#/components/schemas/TestOperation"
+          }, {
+            "$ref" : "#/components/schemas/RemoveOperation"
+          }, {
+            "$ref" : "#/components/schemas/MoveOperation"
+          }, {
+            "$ref" : "#/components/schemas/CopyOperation"
+          } ]
+        }
+      },
+      "MoveOperation" : {
+        "required" : [ "op", "from", "path" ],
+        "type" : "object",
+        "properties" : {
+          "from" : {
+            "pattern" : "^(/[^/~]*(~[01][^/~]*)*)*$",
+            "type" : "string",
+            "description" : "A JSON Pointer path pointing to the location to move/copy from.",
+            "example" : "/a/b/c"
+          },
+          "op" : {
+            "type" : "string",
+            "enum" : [ "move" ]
+          },
+          "path" : {
+            "pattern" : "^(/[^/~]*(~[01][^/~]*)*)*$",
+            "type" : "string",
+            "description" : "A JSON Pointer path pointing to the location to move/copy from.",
+            "example" : "/a/b/c"
+          }
+        }
+      },
+      "RemoveOperation" : {
+        "required" : [ "op", "path" ],
+        "type" : "object",
+        "properties" : {
+          "op" : {
+            "type" : "string",
+            "enum" : [ "remove" ]
+          },
+          "path" : {
+            "pattern" : "^(/[^/~]*(~[01][^/~]*)*)*$",
+            "type" : "string",
+            "description" : "A JSON Pointer path pointing to the location to move/copy from.",
+            "example" : "/a/b/c"
+          }
+        }
+      },
+      "ReplaceOperation" : {
+        "required" : [ "op", "path", "value" ],
+        "type" : "object",
+        "properties" : {
+          "op" : {
+            "type" : "string",
+            "enum" : [ "replace" ]
+          },
+          "path" : {
+            "pattern" : "^(/[^/~]*(~[01][^/~]*)*)*$",
+            "type" : "string",
+            "description" : "A JSON Pointer path pointing to the location to move/copy from.",
+            "example" : "/a/b/c"
+          },
+          "value" : {
+            "description" : "Value can be any JSON value"
+          }
+        }
+      },
+      "TestOperation" : {
+        "required" : [ "op", "path", "value" ],
+        "type" : "object",
+        "properties" : {
+          "op" : {
+            "type" : "string",
+            "enum" : [ "test" ]
+          },
+          "path" : {
+            "pattern" : "^(/[^/~]*(~[01][^/~]*)*)*$",
+            "type" : "string",
+            "description" : "A JSON Pointer path pointing to the location to move/copy from.",
+            "example" : "/a/b/c"
+          },
+          "value" : {
+            "description" : "Value can be any JSON value"
+          }
+        }
+      }
+    },
+    "securitySchemes" : {
+      "basicAuth" : {
+        "scheme" : "basic",
+        "type" : "http"
+      },
+      "bearerAuth" : {
+        "bearerFormat" : "JWT",
+        "scheme" : "bearer",
+        "type" : "http"
+      }
+    }
+  }
+}
