@@ -1,20 +1,17 @@
 import { definePlugin } from '@halo-dev/ui-shared'
-import { defineAsyncComponent, markRaw } from 'vue'
-import { VLoading } from '@halo-dev/components'
+import { markRaw } from 'vue'
 import IconListSettingsLine from '~icons/ri/list-settings-line'
+import HomeView from './views/HomeView.vue'
 
 export default definePlugin({
   components: {},
   routes: [
     {
-      parentName: 'Root',
+      parentName: 'ToolsRoot',
       route: {
         path: '/metadata-manager',
         name: 'MetadataManager',
-        component: defineAsyncComponent({
-          loader: () => import(/* webpackChunkName: "MetadataManager" */ './views/HomeView.vue'),
-          loadingComponent: VLoading,
-        }),
+        component: HomeView,
         meta: {
           title: '元数据字段管家',
           searchable: true,

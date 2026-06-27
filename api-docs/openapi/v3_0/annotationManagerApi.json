@@ -57,6 +57,117 @@
         "tags" : [ "api.annotation-manager.wenjing.com/v1alpha1/AnnotationMetadata" ]
       }
     },
+    "/apis/api.annotation-manager.wenjing.com/v1alpha1/annotation-models" : {
+      "get" : {
+        "description" : "List registered Halo extension models and their source attribution.",
+        "operationId" : "ListAnnotationModels",
+        "responses" : {
+          "default" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "type" : "array",
+                  "items" : {
+                    "$ref" : "#/components/schemas/AnnotationModelVo"
+                  }
+                }
+              }
+            },
+            "description" : "default response"
+          }
+        },
+        "tags" : [ "api.annotation-manager.wenjing.com/v1alpha1/AnnotationMetadata" ]
+      }
+    },
+    "/apis/api.annotation-manager.wenjing.com/v1alpha1/annotation-resources/list" : {
+      "post" : {
+        "description" : "List resources of one supported model and their metadata.annotations.",
+        "operationId" : "ListAnnotationResources",
+        "requestBody" : {
+          "content" : {
+            "*/*" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/AnnotationResourceListRequest"
+              }
+            }
+          }
+        },
+        "responses" : {
+          "default" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "type" : "array",
+                  "items" : {
+                    "$ref" : "#/components/schemas/AnnotationResourceVo"
+                  }
+                }
+              }
+            },
+            "description" : "default response"
+          }
+        },
+        "tags" : [ "api.annotation-manager.wenjing.com/v1alpha1/AnnotationMetadata" ]
+      }
+    },
+    "/apis/api.annotation-manager.wenjing.com/v1alpha1/annotation-resources/update" : {
+      "post" : {
+        "description" : "Replace metadata.annotations of one supported model resource.",
+        "operationId" : "UpdateAnnotationResource",
+        "requestBody" : {
+          "content" : {
+            "*/*" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/AnnotationResourceMetadataUpdateRequest"
+              }
+            }
+          }
+        },
+        "responses" : {
+          "default" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/AnnotationResourceUpdateResultVo"
+                }
+              }
+            },
+            "description" : "default response"
+          }
+        },
+        "tags" : [ "api.annotation-manager.wenjing.com/v1alpha1/AnnotationMetadata" ]
+      }
+    },
+    "/apis/api.annotation-manager.wenjing.com/v1alpha1/annotation-setting-forms" : {
+      "get" : {
+        "description" : "List AnnotationSetting form schemas with source attribution.",
+        "operationId" : "ListAnnotationSettingForms",
+        "parameters" : [ {
+          "in" : "query",
+          "name" : "targetRef",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "default" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "type" : "array",
+                  "items" : {
+                    "$ref" : "#/components/schemas/AnnotationSettingFormVo"
+                  }
+                }
+              }
+            },
+            "description" : "default response"
+          }
+        },
+        "tags" : [ "api.annotation-manager.wenjing.com/v1alpha1/AnnotationMetadata" ]
+      }
+    },
     "/apis/api.annotation-manager.wenjing.com/v1alpha1/annotation-settings/{name}/delete" : {
       "post" : {
         "description" : "Delete a duplicate AnnotationSetting after explicit confirmation.",
@@ -167,6 +278,37 @@
               "*/*" : {
                 "schema" : {
                   "$ref" : "#/components/schemas/CleanupPreviewVo"
+                }
+              }
+            },
+            "description" : "default response"
+          }
+        },
+        "tags" : [ "api.annotation-manager.wenjing.com/v1alpha1/AnnotationMetadata" ]
+      }
+    },
+    "/apis/api.annotation-manager.wenjing.com/v1alpha1/annotation-values/model-scan" : {
+      "post" : {
+        "description" : "Scan all stored metadata.annotations keys on one supported content model.",
+        "operationId" : "ScanModelAnnotationValues",
+        "requestBody" : {
+          "content" : {
+            "*/*" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/ModelAnnotationValuesScanRequest"
+              }
+            }
+          }
+        },
+        "responses" : {
+          "default" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "type" : "array",
+                  "items" : {
+                    "$ref" : "#/components/schemas/AnnotationValueUsageVo"
+                  }
                 }
               }
             },
@@ -288,6 +430,162 @@
           }
         },
         "description" : "Parsed annotation metadata field definition."
+      },
+      "AnnotationModelVo" : {
+        "type" : "object",
+        "properties" : {
+          "apiVersion" : {
+            "type" : "string"
+          },
+          "className" : {
+            "type" : "string"
+          },
+          "confidence" : {
+            "type" : "string"
+          },
+          "description" : {
+            "type" : "string"
+          },
+          "descriptionSource" : {
+            "type" : "string"
+          },
+          "group" : {
+            "type" : "string"
+          },
+          "kind" : {
+            "type" : "string"
+          },
+          "plural" : {
+            "type" : "string"
+          },
+          "singular" : {
+            "type" : "string"
+          },
+          "sourceDisplayName" : {
+            "type" : "string"
+          },
+          "sourceName" : {
+            "type" : "string"
+          },
+          "sourceType" : {
+            "type" : "string"
+          },
+          "supportsValueScan" : {
+            "type" : "boolean"
+          },
+          "targetRef" : {
+            "type" : "string"
+          },
+          "version" : {
+            "type" : "string"
+          }
+        },
+        "description" : "Registered Halo extension model metadata."
+      },
+      "AnnotationResourceListRequest" : {
+        "type" : "object",
+        "properties" : {
+          "targetRef" : {
+            "type" : "string"
+          }
+        },
+        "description" : "Request for listing resources and their metadata.annotations."
+      },
+      "AnnotationResourceMetadataUpdateRequest" : {
+        "type" : "object",
+        "properties" : {
+          "annotations" : {
+            "type" : "object",
+            "additionalProperties" : {
+              "type" : "string"
+            }
+          },
+          "name" : {
+            "type" : "string"
+          },
+          "targetRef" : {
+            "type" : "string"
+          }
+        },
+        "description" : "Request for replacing metadata.annotations of one resource."
+      },
+      "AnnotationResourceUpdateResultVo" : {
+        "type" : "object",
+        "properties" : {
+          "annotations" : {
+            "type" : "object",
+            "additionalProperties" : {
+              "type" : "string"
+            }
+          },
+          "backup" : {
+            "$ref" : "#/components/schemas/BackupVo"
+          },
+          "name" : {
+            "type" : "string"
+          },
+          "targetRef" : {
+            "type" : "string"
+          }
+        },
+        "description" : "Result for metadata.annotations update of one resource."
+      },
+      "AnnotationResourceVo" : {
+        "type" : "object",
+        "properties" : {
+          "annotations" : {
+            "type" : "object",
+            "additionalProperties" : {
+              "type" : "string"
+            }
+          },
+          "apiVersion" : {
+            "type" : "string"
+          },
+          "displayName" : {
+            "type" : "string"
+          },
+          "kind" : {
+            "type" : "string"
+          },
+          "name" : {
+            "type" : "string"
+          },
+          "targetRef" : {
+            "type" : "string"
+          }
+        },
+        "description" : "One resource with folded model data and visible metadata.annotations."
+      },
+      "AnnotationSettingFormVo" : {
+        "type" : "object",
+        "properties" : {
+          "confidence" : {
+            "type" : "string"
+          },
+          "effective" : {
+            "type" : "boolean"
+          },
+          "formSchema" : {
+            "type" : "array",
+            "items" : {
+              "type" : "object"
+            }
+          },
+          "name" : {
+            "type" : "string"
+          },
+          "sourceName" : {
+            "type" : "string"
+          },
+          "sourceType" : {
+            "type" : "string"
+          },
+          "targetRef" : {
+            "type" : "string"
+          }
+        },
+        "description" : "AnnotationSetting form schema with source attribution."
       },
       "AnnotationValueScanRequest" : {
         "type" : "object",
@@ -519,6 +817,19 @@
             "$ref" : "#/components/schemas/CopyOperation"
           } ]
         }
+      },
+      "ModelAnnotationValuesScanRequest" : {
+        "type" : "object",
+        "properties" : {
+          "sampleSize" : {
+            "type" : "integer",
+            "format" : "int32"
+          },
+          "targetRef" : {
+            "type" : "string"
+          }
+        },
+        "description" : "Request for scanning all stored annotation keys on one supported model."
       },
       "MoveOperation" : {
         "required" : [ "op", "from", "path" ],

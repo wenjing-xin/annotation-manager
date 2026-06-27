@@ -26,6 +26,18 @@ import type { AnnotationConflictVo } from '../models';
 // @ts-ignore
 import type { AnnotationFieldDefinition } from '../models';
 // @ts-ignore
+import type { AnnotationModelVo } from '../models';
+// @ts-ignore
+import type { AnnotationResourceListRequest } from '../models';
+// @ts-ignore
+import type { AnnotationResourceMetadataUpdateRequest } from '../models';
+// @ts-ignore
+import type { AnnotationResourceUpdateResultVo } from '../models';
+// @ts-ignore
+import type { AnnotationResourceVo } from '../models';
+// @ts-ignore
+import type { AnnotationSettingFormVo } from '../models';
+// @ts-ignore
 import type { AnnotationValueScanRequest } from '../models';
 // @ts-ignore
 import type { AnnotationValueUsageVo } from '../models';
@@ -39,6 +51,8 @@ import type { CleanupResultVo } from '../models';
 import type { DeleteSettingPreviewVo } from '../models';
 // @ts-ignore
 import type { DeleteSettingRequest } from '../models';
+// @ts-ignore
+import type { ModelAnnotationValuesScanRequest } from '../models';
 /**
  * ApiAnnotationManagerWenjingComV1alpha1AnnotationMetadataApi - axios parameter creator
  * @export
@@ -206,6 +220,128 @@ export const ApiAnnotationManagerWenjingComV1alpha1AnnotationMetadataApiAxiosPar
             };
         },
         /**
+         * List registered Halo extension models and their source attribution.
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        listAnnotationModels: async (options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            const localVarPath = `/apis/api.annotation-manager.wenjing.com/v1alpha1/annotation-models`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication basicAuth required
+            // http basic authentication required
+            setBasicAuthToObject(localVarRequestOptions, configuration)
+
+            // authentication bearerAuth required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * List resources of one supported model and their metadata.annotations.
+         * @param {AnnotationResourceListRequest} [annotationResourceListRequest] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        listAnnotationResources: async (annotationResourceListRequest?: AnnotationResourceListRequest, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            const localVarPath = `/apis/api.annotation-manager.wenjing.com/v1alpha1/annotation-resources/list`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication basicAuth required
+            // http basic authentication required
+            setBasicAuthToObject(localVarRequestOptions, configuration)
+
+            // authentication bearerAuth required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+
+    
+            localVarHeaderParameter['Content-Type'] = 'application/json';
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.data = serializeDataIfNeeded(annotationResourceListRequest, localVarRequestOptions, configuration)
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * List AnnotationSetting form schemas with source attribution.
+         * @param {string} targetRef 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        listAnnotationSettingForms: async (targetRef: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'targetRef' is not null or undefined
+            assertParamExists('listAnnotationSettingForms', 'targetRef', targetRef)
+            const localVarPath = `/apis/api.annotation-manager.wenjing.com/v1alpha1/annotation-setting-forms`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication basicAuth required
+            // http basic authentication required
+            setBasicAuthToObject(localVarRequestOptions, configuration)
+
+            // authentication bearerAuth required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+            if (targetRef !== undefined) {
+                localVarQueryParameter['targetRef'] = targetRef;
+            }
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
          * Preview cleanup of one stored annotation key on supported content models.
          * @param {CleanupRequest} [cleanupRequest] 
          * @param {*} [options] Override http request option.
@@ -328,6 +464,88 @@ export const ApiAnnotationManagerWenjingComV1alpha1AnnotationMetadataApiAxiosPar
                 options: localVarRequestOptions,
             };
         },
+        /**
+         * Scan all stored metadata.annotations keys on one supported content model.
+         * @param {ModelAnnotationValuesScanRequest} [modelAnnotationValuesScanRequest] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        scanModelAnnotationValues: async (modelAnnotationValuesScanRequest?: ModelAnnotationValuesScanRequest, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            const localVarPath = `/apis/api.annotation-manager.wenjing.com/v1alpha1/annotation-values/model-scan`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication basicAuth required
+            // http basic authentication required
+            setBasicAuthToObject(localVarRequestOptions, configuration)
+
+            // authentication bearerAuth required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+
+    
+            localVarHeaderParameter['Content-Type'] = 'application/json';
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.data = serializeDataIfNeeded(modelAnnotationValuesScanRequest, localVarRequestOptions, configuration)
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * Replace metadata.annotations of one supported model resource.
+         * @param {AnnotationResourceMetadataUpdateRequest} [annotationResourceMetadataUpdateRequest] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        updateAnnotationResource: async (annotationResourceMetadataUpdateRequest?: AnnotationResourceMetadataUpdateRequest, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            const localVarPath = `/apis/api.annotation-manager.wenjing.com/v1alpha1/annotation-resources/update`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication basicAuth required
+            // http basic authentication required
+            setBasicAuthToObject(localVarRequestOptions, configuration)
+
+            // authentication bearerAuth required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+
+    
+            localVarHeaderParameter['Content-Type'] = 'application/json';
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.data = serializeDataIfNeeded(annotationResourceMetadataUpdateRequest, localVarRequestOptions, configuration)
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
     }
 };
 
@@ -386,6 +604,41 @@ export const ApiAnnotationManagerWenjingComV1alpha1AnnotationMetadataApiFp = fun
             return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
+         * List registered Halo extension models and their source attribution.
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async listAnnotationModels(options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<AnnotationModelVo>>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.listAnnotationModels(options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['ApiAnnotationManagerWenjingComV1alpha1AnnotationMetadataApi.listAnnotationModels']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
+         * List resources of one supported model and their metadata.annotations.
+         * @param {AnnotationResourceListRequest} [annotationResourceListRequest] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async listAnnotationResources(annotationResourceListRequest?: AnnotationResourceListRequest, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<AnnotationResourceVo>>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.listAnnotationResources(annotationResourceListRequest, options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['ApiAnnotationManagerWenjingComV1alpha1AnnotationMetadataApi.listAnnotationResources']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
+         * List AnnotationSetting form schemas with source attribution.
+         * @param {string} targetRef 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async listAnnotationSettingForms(targetRef: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<AnnotationSettingFormVo>>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.listAnnotationSettingForms(targetRef, options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['ApiAnnotationManagerWenjingComV1alpha1AnnotationMetadataApi.listAnnotationSettingForms']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
          * Preview cleanup of one stored annotation key on supported content models.
          * @param {CleanupRequest} [cleanupRequest] 
          * @param {*} [options] Override http request option.
@@ -419,6 +672,30 @@ export const ApiAnnotationManagerWenjingComV1alpha1AnnotationMetadataApiFp = fun
             const localVarAxiosArgs = await localVarAxiosParamCreator.scanAnnotationValues(annotationValueScanRequest, options);
             const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
             const localVarOperationServerBasePath = operationServerMap['ApiAnnotationManagerWenjingComV1alpha1AnnotationMetadataApi.scanAnnotationValues']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
+         * Scan all stored metadata.annotations keys on one supported content model.
+         * @param {ModelAnnotationValuesScanRequest} [modelAnnotationValuesScanRequest] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async scanModelAnnotationValues(modelAnnotationValuesScanRequest?: ModelAnnotationValuesScanRequest, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<AnnotationValueUsageVo>>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.scanModelAnnotationValues(modelAnnotationValuesScanRequest, options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['ApiAnnotationManagerWenjingComV1alpha1AnnotationMetadataApi.scanModelAnnotationValues']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
+         * Replace metadata.annotations of one supported model resource.
+         * @param {AnnotationResourceMetadataUpdateRequest} [annotationResourceMetadataUpdateRequest] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async updateAnnotationResource(annotationResourceMetadataUpdateRequest?: AnnotationResourceMetadataUpdateRequest, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<AnnotationResourceUpdateResultVo>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.updateAnnotationResource(annotationResourceMetadataUpdateRequest, options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['ApiAnnotationManagerWenjingComV1alpha1AnnotationMetadataApi.updateAnnotationResource']?.[localVarOperationServerIndex]?.url;
             return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
     }
@@ -466,6 +743,32 @@ export const ApiAnnotationManagerWenjingComV1alpha1AnnotationMetadataApiFactory 
             return localVarFp.listAnnotationFields(options).then((request) => request(axios, basePath));
         },
         /**
+         * List registered Halo extension models and their source attribution.
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        listAnnotationModels(options?: RawAxiosRequestConfig): AxiosPromise<Array<AnnotationModelVo>> {
+            return localVarFp.listAnnotationModels(options).then((request) => request(axios, basePath));
+        },
+        /**
+         * List resources of one supported model and their metadata.annotations.
+         * @param {ApiAnnotationManagerWenjingComV1alpha1AnnotationMetadataApiListAnnotationResourcesRequest} requestParameters Request parameters.
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        listAnnotationResources(requestParameters: ApiAnnotationManagerWenjingComV1alpha1AnnotationMetadataApiListAnnotationResourcesRequest = {}, options?: RawAxiosRequestConfig): AxiosPromise<Array<AnnotationResourceVo>> {
+            return localVarFp.listAnnotationResources(requestParameters.annotationResourceListRequest, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * List AnnotationSetting form schemas with source attribution.
+         * @param {ApiAnnotationManagerWenjingComV1alpha1AnnotationMetadataApiListAnnotationSettingFormsRequest} requestParameters Request parameters.
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        listAnnotationSettingForms(requestParameters: ApiAnnotationManagerWenjingComV1alpha1AnnotationMetadataApiListAnnotationSettingFormsRequest, options?: RawAxiosRequestConfig): AxiosPromise<Array<AnnotationSettingFormVo>> {
+            return localVarFp.listAnnotationSettingForms(requestParameters.targetRef, options).then((request) => request(axios, basePath));
+        },
+        /**
          * Preview cleanup of one stored annotation key on supported content models.
          * @param {ApiAnnotationManagerWenjingComV1alpha1AnnotationMetadataApiPreviewCleanupAnnotationValuesRequest} requestParameters Request parameters.
          * @param {*} [options] Override http request option.
@@ -491,6 +794,24 @@ export const ApiAnnotationManagerWenjingComV1alpha1AnnotationMetadataApiFactory 
          */
         scanAnnotationValues(requestParameters: ApiAnnotationManagerWenjingComV1alpha1AnnotationMetadataApiScanAnnotationValuesRequest = {}, options?: RawAxiosRequestConfig): AxiosPromise<AnnotationValueUsageVo> {
             return localVarFp.scanAnnotationValues(requestParameters.annotationValueScanRequest, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * Scan all stored metadata.annotations keys on one supported content model.
+         * @param {ApiAnnotationManagerWenjingComV1alpha1AnnotationMetadataApiScanModelAnnotationValuesRequest} requestParameters Request parameters.
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        scanModelAnnotationValues(requestParameters: ApiAnnotationManagerWenjingComV1alpha1AnnotationMetadataApiScanModelAnnotationValuesRequest = {}, options?: RawAxiosRequestConfig): AxiosPromise<Array<AnnotationValueUsageVo>> {
+            return localVarFp.scanModelAnnotationValues(requestParameters.modelAnnotationValuesScanRequest, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * Replace metadata.annotations of one supported model resource.
+         * @param {ApiAnnotationManagerWenjingComV1alpha1AnnotationMetadataApiUpdateAnnotationResourceRequest} requestParameters Request parameters.
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        updateAnnotationResource(requestParameters: ApiAnnotationManagerWenjingComV1alpha1AnnotationMetadataApiUpdateAnnotationResourceRequest = {}, options?: RawAxiosRequestConfig): AxiosPromise<AnnotationResourceUpdateResultVo> {
+            return localVarFp.updateAnnotationResource(requestParameters.annotationResourceMetadataUpdateRequest, options).then((request) => request(axios, basePath));
         },
     };
 };
@@ -528,6 +849,34 @@ export interface ApiAnnotationManagerWenjingComV1alpha1AnnotationMetadataApiDele
      * @memberof ApiAnnotationManagerWenjingComV1alpha1AnnotationMetadataApiDeleteDuplicateAnnotationSetting
      */
     readonly deleteSettingRequest?: DeleteSettingRequest
+}
+
+/**
+ * Request parameters for listAnnotationResources operation in ApiAnnotationManagerWenjingComV1alpha1AnnotationMetadataApi.
+ * @export
+ * @interface ApiAnnotationManagerWenjingComV1alpha1AnnotationMetadataApiListAnnotationResourcesRequest
+ */
+export interface ApiAnnotationManagerWenjingComV1alpha1AnnotationMetadataApiListAnnotationResourcesRequest {
+    /**
+     * 
+     * @type {AnnotationResourceListRequest}
+     * @memberof ApiAnnotationManagerWenjingComV1alpha1AnnotationMetadataApiListAnnotationResources
+     */
+    readonly annotationResourceListRequest?: AnnotationResourceListRequest
+}
+
+/**
+ * Request parameters for listAnnotationSettingForms operation in ApiAnnotationManagerWenjingComV1alpha1AnnotationMetadataApi.
+ * @export
+ * @interface ApiAnnotationManagerWenjingComV1alpha1AnnotationMetadataApiListAnnotationSettingFormsRequest
+ */
+export interface ApiAnnotationManagerWenjingComV1alpha1AnnotationMetadataApiListAnnotationSettingFormsRequest {
+    /**
+     * 
+     * @type {string}
+     * @memberof ApiAnnotationManagerWenjingComV1alpha1AnnotationMetadataApiListAnnotationSettingForms
+     */
+    readonly targetRef: string
 }
 
 /**
@@ -570,6 +919,34 @@ export interface ApiAnnotationManagerWenjingComV1alpha1AnnotationMetadataApiScan
      * @memberof ApiAnnotationManagerWenjingComV1alpha1AnnotationMetadataApiScanAnnotationValues
      */
     readonly annotationValueScanRequest?: AnnotationValueScanRequest
+}
+
+/**
+ * Request parameters for scanModelAnnotationValues operation in ApiAnnotationManagerWenjingComV1alpha1AnnotationMetadataApi.
+ * @export
+ * @interface ApiAnnotationManagerWenjingComV1alpha1AnnotationMetadataApiScanModelAnnotationValuesRequest
+ */
+export interface ApiAnnotationManagerWenjingComV1alpha1AnnotationMetadataApiScanModelAnnotationValuesRequest {
+    /**
+     * 
+     * @type {ModelAnnotationValuesScanRequest}
+     * @memberof ApiAnnotationManagerWenjingComV1alpha1AnnotationMetadataApiScanModelAnnotationValues
+     */
+    readonly modelAnnotationValuesScanRequest?: ModelAnnotationValuesScanRequest
+}
+
+/**
+ * Request parameters for updateAnnotationResource operation in ApiAnnotationManagerWenjingComV1alpha1AnnotationMetadataApi.
+ * @export
+ * @interface ApiAnnotationManagerWenjingComV1alpha1AnnotationMetadataApiUpdateAnnotationResourceRequest
+ */
+export interface ApiAnnotationManagerWenjingComV1alpha1AnnotationMetadataApiUpdateAnnotationResourceRequest {
+    /**
+     * 
+     * @type {AnnotationResourceMetadataUpdateRequest}
+     * @memberof ApiAnnotationManagerWenjingComV1alpha1AnnotationMetadataApiUpdateAnnotationResource
+     */
+    readonly annotationResourceMetadataUpdateRequest?: AnnotationResourceMetadataUpdateRequest
 }
 
 /**
@@ -622,6 +999,38 @@ export class ApiAnnotationManagerWenjingComV1alpha1AnnotationMetadataApi extends
     }
 
     /**
+     * List registered Halo extension models and their source attribution.
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof ApiAnnotationManagerWenjingComV1alpha1AnnotationMetadataApi
+     */
+    public listAnnotationModels(options?: RawAxiosRequestConfig) {
+        return ApiAnnotationManagerWenjingComV1alpha1AnnotationMetadataApiFp(this.configuration).listAnnotationModels(options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * List resources of one supported model and their metadata.annotations.
+     * @param {ApiAnnotationManagerWenjingComV1alpha1AnnotationMetadataApiListAnnotationResourcesRequest} requestParameters Request parameters.
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof ApiAnnotationManagerWenjingComV1alpha1AnnotationMetadataApi
+     */
+    public listAnnotationResources(requestParameters: ApiAnnotationManagerWenjingComV1alpha1AnnotationMetadataApiListAnnotationResourcesRequest = {}, options?: RawAxiosRequestConfig) {
+        return ApiAnnotationManagerWenjingComV1alpha1AnnotationMetadataApiFp(this.configuration).listAnnotationResources(requestParameters.annotationResourceListRequest, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * List AnnotationSetting form schemas with source attribution.
+     * @param {ApiAnnotationManagerWenjingComV1alpha1AnnotationMetadataApiListAnnotationSettingFormsRequest} requestParameters Request parameters.
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof ApiAnnotationManagerWenjingComV1alpha1AnnotationMetadataApi
+     */
+    public listAnnotationSettingForms(requestParameters: ApiAnnotationManagerWenjingComV1alpha1AnnotationMetadataApiListAnnotationSettingFormsRequest, options?: RawAxiosRequestConfig) {
+        return ApiAnnotationManagerWenjingComV1alpha1AnnotationMetadataApiFp(this.configuration).listAnnotationSettingForms(requestParameters.targetRef, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
      * Preview cleanup of one stored annotation key on supported content models.
      * @param {ApiAnnotationManagerWenjingComV1alpha1AnnotationMetadataApiPreviewCleanupAnnotationValuesRequest} requestParameters Request parameters.
      * @param {*} [options] Override http request option.
@@ -652,6 +1061,28 @@ export class ApiAnnotationManagerWenjingComV1alpha1AnnotationMetadataApi extends
      */
     public scanAnnotationValues(requestParameters: ApiAnnotationManagerWenjingComV1alpha1AnnotationMetadataApiScanAnnotationValuesRequest = {}, options?: RawAxiosRequestConfig) {
         return ApiAnnotationManagerWenjingComV1alpha1AnnotationMetadataApiFp(this.configuration).scanAnnotationValues(requestParameters.annotationValueScanRequest, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * Scan all stored metadata.annotations keys on one supported content model.
+     * @param {ApiAnnotationManagerWenjingComV1alpha1AnnotationMetadataApiScanModelAnnotationValuesRequest} requestParameters Request parameters.
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof ApiAnnotationManagerWenjingComV1alpha1AnnotationMetadataApi
+     */
+    public scanModelAnnotationValues(requestParameters: ApiAnnotationManagerWenjingComV1alpha1AnnotationMetadataApiScanModelAnnotationValuesRequest = {}, options?: RawAxiosRequestConfig) {
+        return ApiAnnotationManagerWenjingComV1alpha1AnnotationMetadataApiFp(this.configuration).scanModelAnnotationValues(requestParameters.modelAnnotationValuesScanRequest, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * Replace metadata.annotations of one supported model resource.
+     * @param {ApiAnnotationManagerWenjingComV1alpha1AnnotationMetadataApiUpdateAnnotationResourceRequest} requestParameters Request parameters.
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof ApiAnnotationManagerWenjingComV1alpha1AnnotationMetadataApi
+     */
+    public updateAnnotationResource(requestParameters: ApiAnnotationManagerWenjingComV1alpha1AnnotationMetadataApiUpdateAnnotationResourceRequest = {}, options?: RawAxiosRequestConfig) {
+        return ApiAnnotationManagerWenjingComV1alpha1AnnotationMetadataApiFp(this.configuration).updateAnnotationResource(requestParameters.annotationResourceMetadataUpdateRequest, options).then((request) => request(this.axios, this.basePath));
     }
 }
 

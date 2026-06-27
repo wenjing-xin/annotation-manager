@@ -14,7 +14,11 @@ rules:
     resources:
       - "annotation-fields"
       - "annotation-conflicts"
+      - "annotation-models"
+      - "annotation-setting-forms"
+      - "annotation-resources/list"
       - "annotation-values/scan"
+      - "annotation-values/model-scan"
     verbs: ["get", "list", "create"]
   - apiGroups:
       - "v1alpha1"
@@ -48,6 +52,7 @@ rules:
     resources:
       - "annotation-settings/delete-preview"
       - "annotation-settings/delete"
+      - "annotation-resources/update"
       - "annotation-values/cleanup-preview"
       - "annotation-values/cleanup"
     verbs: ["create", "update"]

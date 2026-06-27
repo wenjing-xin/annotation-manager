@@ -11,6 +11,12 @@ index.ts
 models/add-operation.ts
 models/annotation-conflict-vo.ts
 models/annotation-field-definition.ts
+models/annotation-model-vo.ts
+models/annotation-resource-list-request.ts
+models/annotation-resource-metadata-update-request.ts
+models/annotation-resource-update-result-vo.ts
+models/annotation-resource-vo.ts
+models/annotation-setting-form-vo.ts
 models/annotation-value-scan-request.ts
 models/annotation-value-usage-vo.ts
 models/backup-vo.ts
@@ -22,6 +28,7 @@ models/delete-setting-preview-vo.ts
 models/delete-setting-request.ts
 models/index.ts
 models/json-patch-inner.ts
+models/model-annotation-values-scan-request.ts
 models/move-operation.ts
 models/remove-operation.ts
 models/replace-operation.ts

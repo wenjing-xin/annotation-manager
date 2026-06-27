@@ -5,10 +5,17 @@ import static org.springdoc.core.fn.builders.parameter.Builder.parameterBuilder;
 import static org.springdoc.core.fn.builders.requestbody.Builder.requestBodyBuilder;
 
 import com.webjing.metadatamanager.service.AnnotationCleanupService;
+import com.webjing.metadatamanager.service.AnnotationModelScanner;
 import com.webjing.metadatamanager.service.AnnotationSettingScanner;
 import com.webjing.metadatamanager.service.AnnotationValueScanner;
 import com.webjing.metadatamanager.vo.AnnotationConflictVo;
 import com.webjing.metadatamanager.vo.AnnotationFieldDefinition;
+import com.webjing.metadatamanager.vo.AnnotationModelVo;
+import com.webjing.metadatamanager.vo.AnnotationResourceListRequest;
+import com.webjing.metadatamanager.vo.AnnotationResourceMetadataUpdateRequest;
+import com.webjing.metadatamanager.vo.AnnotationResourceUpdateResultVo;
+import com.webjing.metadatamanager.vo.AnnotationResourceVo;
+import com.webjing.metadatamanager.vo.AnnotationSettingFormVo;
 import com.webjing.metadatamanager.vo.AnnotationValueScanRequest;
 import com.webjing.metadatamanager.vo.AnnotationValueUsageVo;
 import com.webjing.metadatamanager.vo.CleanupPreviewVo;
@@ -16,6 +23,7 @@ import com.webjing.metadatamanager.vo.CleanupRequest;
 import com.webjing.metadatamanager.vo.CleanupResultVo;
 import com.webjing.metadatamanager.vo.DeleteSettingPreviewVo;
 import com.webjing.metadatamanager.vo.DeleteSettingRequest;
+import com.webjing.metadatamanager.vo.ModelAnnotationValuesScanRequest;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import lombok.RequiredArgsConstructor;
 import org.springdoc.webflux.core.fn.SpringdocRouteBuilder;
@@ -34,6 +42,7 @@ public class AnnotationMetadataEndpoint implements CustomEndpoint {
     private final AnnotationSettingScanner settingScanner;
     private final AnnotationValueScanner valueScanner;
     private final AnnotationCleanupService cleanupService;
+    private final AnnotationModelScanner modelScanner;
 
     @Override
     public RouterFunction<ServerResponse> endpoint() {
@@ -49,12 +58,42 @@ public class AnnotationMetadataEndpoint implements CustomEndpoint {
                     .description("List duplicate annotation metadata field definitions.")
                     .tag(tag)
                     .response(responseBuilder().implementationArray(AnnotationConflictVo.class)))
+            .GET("/annotation-models", this::listModels,
+                builder -> builder.operationId("ListAnnotationModels")
+                    .description("List registered Halo extension models and their source attribution.")
+                    .tag(tag)
+                    .response(responseBuilder().implementationArray(AnnotationModelVo.class)))
+            .GET("/annotation-setting-forms", this::listSettingForms,
+                builder -> builder.operationId("ListAnnotationSettingForms")
+                    .description("List AnnotationSetting form schemas with source attribution.")
+                    .tag(tag)
+                    .parameter(parameterBuilder().name("targetRef").in(ParameterIn.QUERY).required(true))
+                    .response(responseBuilder().implementationArray(AnnotationSettingFormVo.class)))
+            .POST("/annotation-resources/list", this::listAnnotationResources,
+                builder -> builder.operationId("ListAnnotationResources")
+                    .description("List resources of one supported model and their metadata.annotations.")
+                    .tag(tag)
+                    .requestBody(requestBodyBuilder().implementation(AnnotationResourceListRequest.class))
+                    .response(responseBuilder().implementationArray(AnnotationResourceVo.class)))
+            .POST("/annotation-resources/update", this::updateAnnotationResource,
+                builder -> builder.operationId("UpdateAnnotationResource")
+                    .description("Replace metadata.annotations of one supported model resource.")
+                    .tag(tag)
+                    .requestBody(requestBodyBuilder()
+                        .implementation(AnnotationResourceMetadataUpdateRequest.class))
+                    .response(responseBuilder().implementation(AnnotationResourceUpdateResultVo.class)))
             .POST("/annotation-values/scan", this::scanValues,
                 builder -> builder.operationId("ScanAnnotationValues")
                     .description("Scan stored metadata.annotations values on supported content models.")
                     .tag(tag)
                     .requestBody(requestBodyBuilder().implementation(AnnotationValueScanRequest.class))
                     .response(responseBuilder().implementation(AnnotationValueUsageVo.class)))
+            .POST("/annotation-values/model-scan", this::scanModelValues,
+                builder -> builder.operationId("ScanModelAnnotationValues")
+                    .description("Scan all stored metadata.annotations keys on one supported content model.")
+                    .tag(tag)
+                    .requestBody(requestBodyBuilder().implementation(ModelAnnotationValuesScanRequest.class))
+                    .response(responseBuilder().implementationArray(AnnotationValueUsageVo.class)))
             .POST("/annotation-settings/{name}/delete-preview", this::previewDeleteSetting,
                 builder -> builder.operationId("PreviewDeleteAnnotationSetting")
                     .description("Preview deleting a duplicate AnnotationSetting.")
@@ -100,10 +139,43 @@ public class AnnotationMetadataEndpoint implements CustomEndpoint {
             .onErrorResume(this::badRequest);
     }
 
+    private Mono<ServerResponse> listModels(ServerRequest request) {
+        return modelScanner.scanModels()
+            .flatMap(models -> ServerResponse.ok().bodyValue(models))
+            .onErrorResume(this::badRequest);
+    }
+
+    private Mono<ServerResponse> listSettingForms(ServerRequest request) {
+        return settingScanner.scanSettingForms(request.queryParam("targetRef").orElse(null))
+            .flatMap(forms -> ServerResponse.ok().bodyValue(forms))
+            .onErrorResume(this::badRequest);
+    }
+
+    private Mono<ServerResponse> listAnnotationResources(ServerRequest request) {
+        return request.bodyToMono(AnnotationResourceListRequest.class)
+            .flatMap(body -> valueScanner.listResources(body.targetRef()))
+            .flatMap(resources -> ServerResponse.ok().bodyValue(resources))
+            .onErrorResume(this::badRequest);
+    }
+
+    private Mono<ServerResponse> updateAnnotationResource(ServerRequest request) {
+        return request.bodyToMono(AnnotationResourceMetadataUpdateRequest.class)
+            .flatMap(valueScanner::updateResourceAnnotations)
+            .flatMap(result -> ServerResponse.ok().bodyValue(result))
+            .onErrorResume(this::badRequest);
+    }
+
     private Mono<ServerResponse> scanValues(ServerRequest request) {
         return request.bodyToMono(AnnotationValueScanRequest.class)
             .flatMap(valueScanner::scan)
             .flatMap(usage -> ServerResponse.ok().bodyValue(usage))
+            .onErrorResume(this::badRequest);
+    }
+
+    private Mono<ServerResponse> scanModelValues(ServerRequest request) {
+        return request.bodyToMono(ModelAnnotationValuesScanRequest.class)
+            .flatMap(valueScanner::scanModel)
+            .flatMap(usages -> ServerResponse.ok().bodyValue(usages))
             .onErrorResume(this::badRequest);
     }
 
