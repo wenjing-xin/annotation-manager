@@ -23,18 +23,21 @@ export interface CustomAnnotationFieldDraft {
 }
 
 export function modelOptions(models: MetadataModelSummary[]) {
-  return models
+  const optionsByTargetRef = new Map<string, { label: string; value: string }>()
+  models
     .filter((model) => !model.special)
-    .map((model) => {
+    .forEach((model) => {
       const targetRef = validTargetRef(model)
-      return targetRef
-        ? {
-            label: `${model.displayName} (${targetRef})`,
-            value: targetRef,
-          }
-        : undefined
+      if (!targetRef || optionsByTargetRef.has(targetRef)) {
+        return
+      }
+      optionsByTargetRef.set(targetRef, {
+        label: `${model.displayName} (${targetRef})`,
+        value: targetRef,
+      })
     })
-    .filter(Boolean) as Array<{ label: string; value: string }>
+  return Array.from(optionsByTargetRef.values())
+    .sort((left, right) => left.label.localeCompare(right.label))
 }
 
 function validTargetRef(model: MetadataModelSummary) {

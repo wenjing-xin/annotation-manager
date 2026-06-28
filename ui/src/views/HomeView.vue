@@ -54,6 +54,10 @@ const backupPayload = ref<BackupVo>()
 const models = computed(() =>
   buildModelSummaries(annotationModels.value, fields.value, conflicts.value, valuesByModel.value),
 )
+const allModelOptions = computed(() =>
+  buildModelSummaries(annotationModels.value, fields.value, conflicts.value, valuesByModel.value)
+    .filter((model) => !model.special),
+)
 const selectedModel = computed(() => models.value.find((model) => model.targetRef === selectedTargetRef.value))
 const selectedValues = computed(() => {
   if (!selectedTargetRef.value) {
@@ -290,7 +294,7 @@ function handleDeleteCustomSetting(name: string) {
     title: '删除自定义表单定义',
     description: `将删除 ${name} 这份自定义 AnnotationSetting。该操作只删除表单定义，不会删除任何模型数据里的 metadata.annotations。`,
     confirmType: 'danger',
-    confirmText: '删除',
+    confirmText: '确认删除',
     cancelText: '取消',
     onConfirm: () => deleteCustomSetting(name),
   })
@@ -299,11 +303,10 @@ function handleDeleteCustomSetting(name: string) {
 async function deleteCustomSetting(name: string) {
   deletingSetting.value = true
   try {
-    const response = await annotationManagerApi.deleteCustomAnnotationSetting({ name })
+    await annotationManagerApi.deleteCustomAnnotationSetting({ name })
     Toast.success('自定义表单定义已删除')
     rememberDeletedSettings([name])
     pruneDeletedSettings([name])
-    showBackup(response.data.backup)
     await loadAll()
   } catch (error) {
     Toast.error(errorMessage(error))
@@ -674,7 +677,7 @@ onMounted(loadAll)
         :values="selectedValues"
         :resources="selectedResources"
         :setting-forms="selectedSettingForms"
-        :models="models"
+        :models="allModelOptions"
         :loading="loading"
         :value-loading="valueLoading"
         :resource-loading="resourceLoading"
@@ -1260,6 +1263,13 @@ onMounted(loadAll)
   line-height: 18px;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+.metadata-manager :deep(.annotation-setting-row__actions) {
+  display: inline-flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 8px;
 }
 
 .metadata-manager :deep(.annotation-setting-list) {
