@@ -5,16 +5,16 @@ metadata:
   name: annotation-manager
 spec:
   enabled: true
-  requires: ">=2.23.0"
+  requires: ">=2.25.0"
   author:
     name: webjing
     website: https://github.com/webjing
   logo: logo.png
-  homepage: https://github.com/webjing/annotation-manager#readme
-  repo: https://github.com/webjing/annotation-manager
-  issues: https://github.com/webjing/annotation-manager/issues
+  homepage: https://github.com/wenjing-xin/annotation-manager#readme
+  repo: https://github.com/wenjing-xin/annotation-manager
+  issues: https://github.com/wenjing-xin/annotation-manager/issues
   displayName: "元数据字段管家"
   description: "帮助管理员排查、归因和治理 Halo 主题/插件扩展的元数据表单字段，同时支持为自定义数据模型增加可视化元数据表单。"
   license:
     - name: "GPL-3.0"
-      url: "https://github.com/webjing/annotation-manager/blob/main/LICENSE"
+      url: "https://github.com/wenjing-xin/annotation-manager/blob/main/LICENSE"
