@@ -4,6 +4,15 @@
 
 当多个主题或插件为同一个模型注册了相同的 annotation key 时，Halo Console 可能会渲染出重复字段。这个插件会把“字段来自哪里、是否冲突、能否安全删除、现有数据里有没有值”展示清楚，帮助站点管理员安全地整理元数据表单。
 
+<div style="display: flex; gap: 10px; width: 100%;">
+    <div style="flex: 1;">
+        <img src="https://i.ibb.co/b5MQV5Pd/conflict-resolve.png" style="width: 100%;" alt="冲突定义页面">
+    </div>
+    <div style="flex: 1;">
+        <img src="https://i.ibb.co/23c8pXXk/conflict-annotaion.webp" style="width: 100%;" alt="标签编辑页面">
+    </div>
+</div>
+
 ## 功能亮点
 
 - **模型总览**：左侧展示 Halo 当前注册的数据模型，区分系统模型、插件模型和特殊的 `AnnotationSetting` 治理入口。
