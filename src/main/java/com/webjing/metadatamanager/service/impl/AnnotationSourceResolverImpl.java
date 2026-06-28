@@ -23,6 +23,7 @@ import run.halo.app.infra.SystemSetting;
 public class AnnotationSourceResolverImpl implements AnnotationSourceResolver {
 
     private static final String PLUGIN_NAME_LABEL = "plugin.halo.run/plugin-name";
+    public static final String CUSTOM_FORM_LABEL = "metadata-manager.webjing.com/custom-form";
 
     private final ReactiveExtensionClient client;
 
@@ -30,6 +31,9 @@ public class AnnotationSourceResolverImpl implements AnnotationSourceResolver {
     public SourceInfo resolve(AnnotationSetting setting) {
         Map<String, String> labels = Optional.ofNullable(setting.getMetadata().getLabels())
             .orElse(Map.of());
+        if ("true".equals(labels.get(CUSTOM_FORM_LABEL))) {
+            return new SourceInfo("system", null, "custom");
+        }
         var pluginName = labels.get(PLUGIN_NAME_LABEL);
         if (pluginName != null && !pluginName.isBlank()) {
             return new SourceInfo("plugin", pluginName, "label");
@@ -60,6 +64,9 @@ public class AnnotationSourceResolverImpl implements AnnotationSourceResolver {
         if ("plugin".equals(sourceInfo.sourceType())) {
             return sourceInfo.sourceName() != null
                 && runtimeState.startedPluginNames().contains(sourceInfo.sourceName());
+        }
+        if ("system".equals(sourceInfo.sourceType())) {
+            return true;
         }
         return false;
     }

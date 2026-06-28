@@ -50,6 +50,9 @@ const filteredModels = computed(() => {
         </span>
         <span class="model-item__meta">
           <VTag class="vtag" theme="secondary" rounded>{{ sourceTypeLabel(model.sourceType) }}</VTag>
+          <VTag v-if="model.special === 'annotation-settings'" class="vtag vtag--warning" theme="danger" rounded>
+            置顶
+          </VTag>
           <VTag v-if="model.sourceDisplayName || model.sourceName" class="vtag" rounded>
             {{ model.sourceDisplayName || model.sourceName }}
           </VTag>

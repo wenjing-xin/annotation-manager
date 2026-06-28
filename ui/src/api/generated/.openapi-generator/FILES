@@ -24,6 +24,7 @@ models/cleanup-preview-vo.ts
 models/cleanup-request.ts
 models/cleanup-result-vo.ts
 models/copy-operation.ts
+models/custom-annotation-setting-request.ts
 models/delete-setting-preview-vo.ts
 models/delete-setting-request.ts
 models/index.ts

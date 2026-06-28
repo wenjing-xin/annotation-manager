@@ -21,24 +21,28 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Component;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
-import run.halo.app.core.extension.content.Category;
-import run.halo.app.core.extension.content.Post;
-import run.halo.app.core.extension.content.SinglePage;
-import run.halo.app.core.extension.content.Tag;
 import run.halo.app.extension.AbstractExtension;
 import run.halo.app.extension.ListOptions;
 import run.halo.app.extension.ReactiveExtensionClient;
+import run.halo.app.extension.Scheme;
+import run.halo.app.extension.SchemeManager;
 
 @Component
 @RequiredArgsConstructor
 public class AnnotationValueScannerImpl implements AnnotationValueScanner {
 
     private final ReactiveExtensionClient client;
+    private final SchemeManager schemeManager;
 
     @Override
     public Mono<AnnotationValueUsageVo> scan(AnnotationValueScanRequest request) {
-        validateRequest(request.targetRef(), request.annotationKey());
-        return listAll(resolveTargetClass(request.targetRef()))
+        validateScanRequest(request.targetRef(), request.annotationKey());
+        var clazz = resolveSupportedTargetClass(request.targetRef());
+        if (clazz == null) {
+            return Mono.just(usage(List.of(), request.targetRef(), request.annotationKey(),
+                request.normalizedSampleSize()));
+        }
+        return listAllIfAvailable(clazz)
             .collectList()
             .map(resources -> usage(resources, request.targetRef(), request.annotationKey(),
                 request.normalizedSampleSize()));
@@ -46,8 +50,12 @@ public class AnnotationValueScannerImpl implements AnnotationValueScanner {
 
     @Override
     public Mono<List<AnnotationValueUsageVo>> scanModel(ModelAnnotationValuesScanRequest request) {
-        validateTargetRef(request.targetRef());
-        return listAll(resolveTargetClass(request.targetRef()))
+        validateTargetRefValue(request.targetRef());
+        var clazz = resolveSupportedTargetClass(request.targetRef());
+        if (clazz == null) {
+            return Mono.just(List.of());
+        }
+        return listAllIfAvailable(clazz)
             .collectList()
             .map(resources -> {
                 var annotationKeys = new LinkedHashSet<String>();
@@ -62,8 +70,12 @@ public class AnnotationValueScannerImpl implements AnnotationValueScanner {
 
     @Override
     public Mono<List<AnnotationResourceVo>> listResources(String targetRef) {
-        validateTargetRef(targetRef);
-        return listAll(resolveTargetClass(targetRef))
+        validateTargetRefValue(targetRef);
+        var clazz = resolveSupportedTargetClass(targetRef);
+        if (clazz == null) {
+            return Mono.just(List.of());
+        }
+        return listAllIfAvailable(clazz)
             .map(resource -> new AnnotationResourceVo(
                 targetRef,
                 resource.getApiVersion(),
@@ -83,15 +95,7 @@ public class AnnotationValueScannerImpl implements AnnotationValueScanner {
         return client.fetch(clazz, request.name())
             .flatMap(resource -> {
                 var backup = resourceBackup(request.targetRef(), resource);
-                var annotations = new LinkedHashMap<String, String>();
-                if (request.annotations() != null) {
-                    request.annotations().forEach((key, value) -> {
-                        if (key != null && !key.isBlank()) {
-                            annotations.put(key, value == null ? "" : value);
-                        }
-                    });
-                }
-                resource.getMetadata().setAnnotations(annotations);
+                var annotations = replaceAnnotationsOnly(resource, request.annotations());
                 return client.update(resource)
                     .map(updated -> new AnnotationResourceUpdateResultVo(
                         request.targetRef(),
@@ -102,10 +106,29 @@ public class AnnotationValueScannerImpl implements AnnotationValueScanner {
             });
     }
 
+    static LinkedHashMap<String, String> replaceAnnotationsOnly(AbstractExtension resource,
+        Map<String, String> nextAnnotations) {
+        var annotations = new LinkedHashMap<String, String>();
+        if (nextAnnotations != null) {
+            nextAnnotations.forEach((key, value) -> {
+                if (key != null && !key.isBlank()) {
+                    annotations.put(key, value == null ? "" : value);
+                }
+            });
+        }
+        resource.getMetadata().setAnnotations(annotations);
+        return annotations;
+    }
+
     @Override
     public Mono<BackupVo> backup(String targetRef, String annotationKey) {
-        validateRequest(targetRef, annotationKey);
-        return listAll(resolveTargetClass(targetRef))
+        validateScanRequest(targetRef, annotationKey);
+        var clazz = resolveSupportedTargetClass(targetRef);
+        if (clazz == null) {
+            return Mono.just(new BackupVo(Instant.now().toString(), "annotation-value-cleanup",
+                targetRef, annotationKey, List.of()));
+        }
+        return listAllIfAvailable(clazz)
             .filter(resource -> annotations(resource).containsKey(annotationKey))
             .map(resource -> backupItem(resource, annotationKey))
             .collectList()
@@ -114,8 +137,12 @@ public class AnnotationValueScannerImpl implements AnnotationValueScanner {
     }
 
     public Flux<? extends AbstractExtension> resourcesWithKey(String targetRef, String annotationKey) {
-        validateRequest(targetRef, annotationKey);
-        return listAll(resolveTargetClass(targetRef))
+        validateScanRequest(targetRef, annotationKey);
+        var clazz = resolveSupportedTargetClass(targetRef);
+        if (clazz == null) {
+            return Flux.empty();
+        }
+        return listAllIfAvailable(clazz)
             .filter(resource -> annotations(resource).containsKey(annotationKey));
     }
 
@@ -129,6 +156,11 @@ public class AnnotationValueScannerImpl implements AnnotationValueScanner {
 
     private <T extends AbstractExtension> Flux<T> listAll(Class<T> clazz) {
         return client.listAll(clazz, ListOptions.builder().build(), Sort.by("metadata.name").ascending());
+    }
+
+    private <T extends AbstractExtension> Flux<T> listAllIfAvailable(Class<T> clazz) {
+        return listAll(clazz)
+            .onErrorResume(error -> isMissingResourceRoute(error) ? Flux.empty() : Flux.error(error));
     }
 
     private AnnotationValueUsageVo usage(List<? extends AbstractExtension> resources, String targetRef,
@@ -182,18 +214,22 @@ public class AnnotationValueScannerImpl implements AnnotationValueScanner {
         return item;
     }
 
-    private void validateRequest(String targetRef, String annotationKey) {
-        validateTargetRef(targetRef);
+    private void validateScanRequest(String targetRef, String annotationKey) {
+        validateTargetRefValue(targetRef);
         if (annotationKey == null || annotationKey.isBlank()) {
             throw new IllegalArgumentException("annotationKey is required.");
         }
     }
 
     private void validateTargetRef(String targetRef) {
+        validateTargetRefValue(targetRef);
+        resolveTargetClass(targetRef);
+    }
+
+    private void validateTargetRefValue(String targetRef) {
         if (targetRef == null || targetRef.isBlank()) {
             throw new IllegalArgumentException("targetRef is required.");
         }
-        resolveTargetClass(targetRef);
     }
 
     private void validateResourceUpdateRequest(AnnotationResourceMetadataUpdateRequest request) {
@@ -235,12 +271,41 @@ public class AnnotationValueScannerImpl implements AnnotationValueScanner {
     }
 
     private Class<? extends AbstractExtension> resolveTargetClass(String targetRef) {
-        return switch (targetRef) {
-            case "content.halo.run/Post" -> Post.class;
-            case "content.halo.run/SinglePage" -> SinglePage.class;
-            case "content.halo.run/Category" -> Category.class;
-            case "content.halo.run/Tag" -> Tag.class;
-            default -> throw new IllegalArgumentException("Unsupported targetRef: " + targetRef);
-        };
+        return resolveTargetClassIfAvailable(targetRef)
+            .orElseThrow(() -> new IllegalArgumentException("Unsupported targetRef: " + targetRef));
+    }
+
+    private Class<? extends AbstractExtension> resolveSupportedTargetClass(String targetRef) {
+        return resolveTargetClassIfAvailable(targetRef).orElse(null);
+    }
+
+    private java.util.Optional<Class<? extends AbstractExtension>> resolveTargetClassIfAvailable(
+        String targetRef) {
+        return schemeManager.schemes().stream()
+            .filter(scheme -> targetRef(scheme).equals(targetRef))
+            .map(Scheme::type)
+            .filter(AbstractExtension.class::isAssignableFrom)
+            .map(this::asExtensionClass)
+            .findFirst();
+    }
+
+    private String targetRef(Scheme scheme) {
+        var gvk = scheme.groupVersionKind();
+        return gvk.group() + "/" + gvk.kind();
+    }
+
+    @SuppressWarnings("unchecked")
+    private Class<? extends AbstractExtension> asExtensionClass(Class<?> type) {
+        return (Class<? extends AbstractExtension>) type;
+    }
+
+    private boolean isMissingResourceRoute(Throwable error) {
+        var message = error.getMessage();
+        if (message == null) {
+            message = "";
+        }
+        return error.getClass().getName().contains("NotFound")
+            || message.contains("404")
+            || message.contains("No static resource");
     }
 }

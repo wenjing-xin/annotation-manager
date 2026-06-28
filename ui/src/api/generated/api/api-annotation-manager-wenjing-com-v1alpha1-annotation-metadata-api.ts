@@ -48,6 +48,8 @@ import type { CleanupRequest } from '../models';
 // @ts-ignore
 import type { CleanupResultVo } from '../models';
 // @ts-ignore
+import type { CustomAnnotationSettingRequest } from '../models';
+// @ts-ignore
 import type { DeleteSettingPreviewVo } from '../models';
 // @ts-ignore
 import type { DeleteSettingRequest } from '../models';
@@ -94,6 +96,88 @@ export const ApiAnnotationManagerWenjingComV1alpha1AnnotationMetadataApiAxiosPar
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
             localVarRequestOptions.data = serializeDataIfNeeded(cleanupRequest, localVarRequestOptions, configuration)
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * Create a custom AnnotationSetting form schema.
+         * @param {CustomAnnotationSettingRequest} [customAnnotationSettingRequest] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        createCustomAnnotationSetting: async (customAnnotationSettingRequest?: CustomAnnotationSettingRequest, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            const localVarPath = `/apis/api.annotation-manager.wenjing.com/v1alpha1/annotation-settings/custom`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication basicAuth required
+            // http basic authentication required
+            setBasicAuthToObject(localVarRequestOptions, configuration)
+
+            // authentication bearerAuth required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+
+    
+            localVarHeaderParameter['Content-Type'] = 'application/json';
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.data = serializeDataIfNeeded(customAnnotationSettingRequest, localVarRequestOptions, configuration)
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * Delete a custom AnnotationSetting form schema created by this plugin.
+         * @param {string} name 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        deleteCustomAnnotationSetting: async (name: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'name' is not null or undefined
+            assertParamExists('deleteCustomAnnotationSetting', 'name', name)
+            const localVarPath = `/apis/api.annotation-manager.wenjing.com/v1alpha1/annotation-settings/{name}/custom`
+                .replace(`{${"name"}}`, encodeURIComponent(String(name)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'DELETE', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication basicAuth required
+            // http basic authentication required
+            setBasicAuthToObject(localVarRequestOptions, configuration)
+
+            // authentication bearerAuth required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
 
             return {
                 url: toPathString(localVarUrlObj),
@@ -546,6 +630,51 @@ export const ApiAnnotationManagerWenjingComV1alpha1AnnotationMetadataApiAxiosPar
                 options: localVarRequestOptions,
             };
         },
+        /**
+         * Update a custom AnnotationSetting form schema created by this plugin.
+         * @param {string} name 
+         * @param {CustomAnnotationSettingRequest} [customAnnotationSettingRequest] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        updateCustomAnnotationSetting: async (name: string, customAnnotationSettingRequest?: CustomAnnotationSettingRequest, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'name' is not null or undefined
+            assertParamExists('updateCustomAnnotationSetting', 'name', name)
+            const localVarPath = `/apis/api.annotation-manager.wenjing.com/v1alpha1/annotation-settings/{name}/custom`
+                .replace(`{${"name"}}`, encodeURIComponent(String(name)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'PUT', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication basicAuth required
+            // http basic authentication required
+            setBasicAuthToObject(localVarRequestOptions, configuration)
+
+            // authentication bearerAuth required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+
+    
+            localVarHeaderParameter['Content-Type'] = 'application/json';
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.data = serializeDataIfNeeded(customAnnotationSettingRequest, localVarRequestOptions, configuration)
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
     }
 };
 
@@ -566,6 +695,30 @@ export const ApiAnnotationManagerWenjingComV1alpha1AnnotationMetadataApiFp = fun
             const localVarAxiosArgs = await localVarAxiosParamCreator.cleanupAnnotationValues(cleanupRequest, options);
             const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
             const localVarOperationServerBasePath = operationServerMap['ApiAnnotationManagerWenjingComV1alpha1AnnotationMetadataApi.cleanupAnnotationValues']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
+         * Create a custom AnnotationSetting form schema.
+         * @param {CustomAnnotationSettingRequest} [customAnnotationSettingRequest] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async createCustomAnnotationSetting(customAnnotationSettingRequest?: CustomAnnotationSettingRequest, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<AnnotationSettingFormVo>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.createCustomAnnotationSetting(customAnnotationSettingRequest, options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['ApiAnnotationManagerWenjingComV1alpha1AnnotationMetadataApi.createCustomAnnotationSetting']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
+         * Delete a custom AnnotationSetting form schema created by this plugin.
+         * @param {string} name 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async deleteCustomAnnotationSetting(name: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<CleanupResultVo>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.deleteCustomAnnotationSetting(name, options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['ApiAnnotationManagerWenjingComV1alpha1AnnotationMetadataApi.deleteCustomAnnotationSetting']?.[localVarOperationServerIndex]?.url;
             return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
@@ -698,6 +851,19 @@ export const ApiAnnotationManagerWenjingComV1alpha1AnnotationMetadataApiFp = fun
             const localVarOperationServerBasePath = operationServerMap['ApiAnnotationManagerWenjingComV1alpha1AnnotationMetadataApi.updateAnnotationResource']?.[localVarOperationServerIndex]?.url;
             return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
+        /**
+         * Update a custom AnnotationSetting form schema created by this plugin.
+         * @param {string} name 
+         * @param {CustomAnnotationSettingRequest} [customAnnotationSettingRequest] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async updateCustomAnnotationSetting(name: string, customAnnotationSettingRequest?: CustomAnnotationSettingRequest, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<AnnotationSettingFormVo>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.updateCustomAnnotationSetting(name, customAnnotationSettingRequest, options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['ApiAnnotationManagerWenjingComV1alpha1AnnotationMetadataApi.updateCustomAnnotationSetting']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
     }
 };
 
@@ -716,6 +882,24 @@ export const ApiAnnotationManagerWenjingComV1alpha1AnnotationMetadataApiFactory 
          */
         cleanupAnnotationValues(requestParameters: ApiAnnotationManagerWenjingComV1alpha1AnnotationMetadataApiCleanupAnnotationValuesRequest = {}, options?: RawAxiosRequestConfig): AxiosPromise<CleanupResultVo> {
             return localVarFp.cleanupAnnotationValues(requestParameters.cleanupRequest, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * Create a custom AnnotationSetting form schema.
+         * @param {ApiAnnotationManagerWenjingComV1alpha1AnnotationMetadataApiCreateCustomAnnotationSettingRequest} requestParameters Request parameters.
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        createCustomAnnotationSetting(requestParameters: ApiAnnotationManagerWenjingComV1alpha1AnnotationMetadataApiCreateCustomAnnotationSettingRequest = {}, options?: RawAxiosRequestConfig): AxiosPromise<AnnotationSettingFormVo> {
+            return localVarFp.createCustomAnnotationSetting(requestParameters.customAnnotationSettingRequest, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * Delete a custom AnnotationSetting form schema created by this plugin.
+         * @param {ApiAnnotationManagerWenjingComV1alpha1AnnotationMetadataApiDeleteCustomAnnotationSettingRequest} requestParameters Request parameters.
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        deleteCustomAnnotationSetting(requestParameters: ApiAnnotationManagerWenjingComV1alpha1AnnotationMetadataApiDeleteCustomAnnotationSettingRequest, options?: RawAxiosRequestConfig): AxiosPromise<CleanupResultVo> {
+            return localVarFp.deleteCustomAnnotationSetting(requestParameters.name, options).then((request) => request(axios, basePath));
         },
         /**
          * Delete a duplicate AnnotationSetting after explicit confirmation.
@@ -813,6 +997,15 @@ export const ApiAnnotationManagerWenjingComV1alpha1AnnotationMetadataApiFactory 
         updateAnnotationResource(requestParameters: ApiAnnotationManagerWenjingComV1alpha1AnnotationMetadataApiUpdateAnnotationResourceRequest = {}, options?: RawAxiosRequestConfig): AxiosPromise<AnnotationResourceUpdateResultVo> {
             return localVarFp.updateAnnotationResource(requestParameters.annotationResourceMetadataUpdateRequest, options).then((request) => request(axios, basePath));
         },
+        /**
+         * Update a custom AnnotationSetting form schema created by this plugin.
+         * @param {ApiAnnotationManagerWenjingComV1alpha1AnnotationMetadataApiUpdateCustomAnnotationSettingRequest} requestParameters Request parameters.
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        updateCustomAnnotationSetting(requestParameters: ApiAnnotationManagerWenjingComV1alpha1AnnotationMetadataApiUpdateCustomAnnotationSettingRequest, options?: RawAxiosRequestConfig): AxiosPromise<AnnotationSettingFormVo> {
+            return localVarFp.updateCustomAnnotationSetting(requestParameters.name, requestParameters.customAnnotationSettingRequest, options).then((request) => request(axios, basePath));
+        },
     };
 };
 
@@ -828,6 +1021,34 @@ export interface ApiAnnotationManagerWenjingComV1alpha1AnnotationMetadataApiClea
      * @memberof ApiAnnotationManagerWenjingComV1alpha1AnnotationMetadataApiCleanupAnnotationValues
      */
     readonly cleanupRequest?: CleanupRequest
+}
+
+/**
+ * Request parameters for createCustomAnnotationSetting operation in ApiAnnotationManagerWenjingComV1alpha1AnnotationMetadataApi.
+ * @export
+ * @interface ApiAnnotationManagerWenjingComV1alpha1AnnotationMetadataApiCreateCustomAnnotationSettingRequest
+ */
+export interface ApiAnnotationManagerWenjingComV1alpha1AnnotationMetadataApiCreateCustomAnnotationSettingRequest {
+    /**
+     * 
+     * @type {CustomAnnotationSettingRequest}
+     * @memberof ApiAnnotationManagerWenjingComV1alpha1AnnotationMetadataApiCreateCustomAnnotationSetting
+     */
+    readonly customAnnotationSettingRequest?: CustomAnnotationSettingRequest
+}
+
+/**
+ * Request parameters for deleteCustomAnnotationSetting operation in ApiAnnotationManagerWenjingComV1alpha1AnnotationMetadataApi.
+ * @export
+ * @interface ApiAnnotationManagerWenjingComV1alpha1AnnotationMetadataApiDeleteCustomAnnotationSettingRequest
+ */
+export interface ApiAnnotationManagerWenjingComV1alpha1AnnotationMetadataApiDeleteCustomAnnotationSettingRequest {
+    /**
+     * 
+     * @type {string}
+     * @memberof ApiAnnotationManagerWenjingComV1alpha1AnnotationMetadataApiDeleteCustomAnnotationSetting
+     */
+    readonly name: string
 }
 
 /**
@@ -950,6 +1171,27 @@ export interface ApiAnnotationManagerWenjingComV1alpha1AnnotationMetadataApiUpda
 }
 
 /**
+ * Request parameters for updateCustomAnnotationSetting operation in ApiAnnotationManagerWenjingComV1alpha1AnnotationMetadataApi.
+ * @export
+ * @interface ApiAnnotationManagerWenjingComV1alpha1AnnotationMetadataApiUpdateCustomAnnotationSettingRequest
+ */
+export interface ApiAnnotationManagerWenjingComV1alpha1AnnotationMetadataApiUpdateCustomAnnotationSettingRequest {
+    /**
+     * 
+     * @type {string}
+     * @memberof ApiAnnotationManagerWenjingComV1alpha1AnnotationMetadataApiUpdateCustomAnnotationSetting
+     */
+    readonly name: string
+
+    /**
+     * 
+     * @type {CustomAnnotationSettingRequest}
+     * @memberof ApiAnnotationManagerWenjingComV1alpha1AnnotationMetadataApiUpdateCustomAnnotationSetting
+     */
+    readonly customAnnotationSettingRequest?: CustomAnnotationSettingRequest
+}
+
+/**
  * ApiAnnotationManagerWenjingComV1alpha1AnnotationMetadataApi - object-oriented interface
  * @export
  * @class ApiAnnotationManagerWenjingComV1alpha1AnnotationMetadataApi
@@ -965,6 +1207,28 @@ export class ApiAnnotationManagerWenjingComV1alpha1AnnotationMetadataApi extends
      */
     public cleanupAnnotationValues(requestParameters: ApiAnnotationManagerWenjingComV1alpha1AnnotationMetadataApiCleanupAnnotationValuesRequest = {}, options?: RawAxiosRequestConfig) {
         return ApiAnnotationManagerWenjingComV1alpha1AnnotationMetadataApiFp(this.configuration).cleanupAnnotationValues(requestParameters.cleanupRequest, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * Create a custom AnnotationSetting form schema.
+     * @param {ApiAnnotationManagerWenjingComV1alpha1AnnotationMetadataApiCreateCustomAnnotationSettingRequest} requestParameters Request parameters.
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof ApiAnnotationManagerWenjingComV1alpha1AnnotationMetadataApi
+     */
+    public createCustomAnnotationSetting(requestParameters: ApiAnnotationManagerWenjingComV1alpha1AnnotationMetadataApiCreateCustomAnnotationSettingRequest = {}, options?: RawAxiosRequestConfig) {
+        return ApiAnnotationManagerWenjingComV1alpha1AnnotationMetadataApiFp(this.configuration).createCustomAnnotationSetting(requestParameters.customAnnotationSettingRequest, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * Delete a custom AnnotationSetting form schema created by this plugin.
+     * @param {ApiAnnotationManagerWenjingComV1alpha1AnnotationMetadataApiDeleteCustomAnnotationSettingRequest} requestParameters Request parameters.
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof ApiAnnotationManagerWenjingComV1alpha1AnnotationMetadataApi
+     */
+    public deleteCustomAnnotationSetting(requestParameters: ApiAnnotationManagerWenjingComV1alpha1AnnotationMetadataApiDeleteCustomAnnotationSettingRequest, options?: RawAxiosRequestConfig) {
+        return ApiAnnotationManagerWenjingComV1alpha1AnnotationMetadataApiFp(this.configuration).deleteCustomAnnotationSetting(requestParameters.name, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**
@@ -1083,6 +1347,17 @@ export class ApiAnnotationManagerWenjingComV1alpha1AnnotationMetadataApi extends
      */
     public updateAnnotationResource(requestParameters: ApiAnnotationManagerWenjingComV1alpha1AnnotationMetadataApiUpdateAnnotationResourceRequest = {}, options?: RawAxiosRequestConfig) {
         return ApiAnnotationManagerWenjingComV1alpha1AnnotationMetadataApiFp(this.configuration).updateAnnotationResource(requestParameters.annotationResourceMetadataUpdateRequest, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * Update a custom AnnotationSetting form schema created by this plugin.
+     * @param {ApiAnnotationManagerWenjingComV1alpha1AnnotationMetadataApiUpdateCustomAnnotationSettingRequest} requestParameters Request parameters.
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof ApiAnnotationManagerWenjingComV1alpha1AnnotationMetadataApi
+     */
+    public updateCustomAnnotationSetting(requestParameters: ApiAnnotationManagerWenjingComV1alpha1AnnotationMetadataApiUpdateCustomAnnotationSettingRequest, options?: RawAxiosRequestConfig) {
+        return ApiAnnotationManagerWenjingComV1alpha1AnnotationMetadataApiFp(this.configuration).updateCustomAnnotationSetting(requestParameters.name, requestParameters.customAnnotationSettingRequest, options).then((request) => request(this.axios, this.basePath));
     }
 }
 

@@ -13,9 +13,9 @@ class AnnotationConflictDetectorImplTest {
     @Test
     void detectsDuplicatesByTargetRefAndAnnotationKey() {
         var fields = List.of(
-            field("plugin-setting", "content.halo.run/Post", "copyright", true),
-            field("theme-setting", "content.halo.run/Post", "copyright", false),
-            field("other-setting", "content.halo.run/Post", "summary", true)
+            field("plugin-setting", "content.halo.run/Post", "copyright", true, true),
+            field("theme-setting", "content.halo.run/Post", "copyright", false, true),
+            field("other-setting", "content.halo.run/Post", "summary", true, false)
         );
 
         var conflicts = detector.detect(fields);
@@ -27,9 +27,23 @@ class AnnotationConflictDetectorImplTest {
             .containsExactly("plugin-setting", "theme-setting");
     }
 
+    @Test
+    void returnsOnlyDuplicateDefinitionsAndKeepsLatestDefinitionClean() {
+        var fields = List.of(
+            field("latest-setting", "content.halo.run/Post", "copyright", true, false),
+            field("old-setting", "content.halo.run/Post", "copyright", true, true)
+        );
+
+        var conflicts = detector.detect(fields);
+
+        assertThat(conflicts).hasSize(1);
+        assertThat(conflicts.get(0).definitions()).extracting("annotationSettingName")
+            .containsExactly("old-setting");
+    }
+
     private AnnotationFieldDefinition field(String settingName, String targetRef, String key,
-        boolean effective) {
+        boolean effective, boolean duplicate) {
         return new AnnotationFieldDefinition(settingName, targetRef, key, key, "text",
-            "plugin", "source", effective, true, "label", null, null);
+            "plugin", "source", effective, duplicate, "label", null, null);
     }
 }

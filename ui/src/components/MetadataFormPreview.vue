@@ -131,7 +131,7 @@ function sampleValue(usage?: AnnotationValueUsageVo) {
             <template #icon>
               <IconDeleteBin />
             </template>
-            移除定义
+            移除
           </VButton>
           <VButton
             v-if="valueUsage(field)"

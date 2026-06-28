@@ -168,6 +168,95 @@
         "tags" : [ "api.annotation-manager.wenjing.com/v1alpha1/AnnotationMetadata" ]
       }
     },
+    "/apis/api.annotation-manager.wenjing.com/v1alpha1/annotation-settings/custom" : {
+      "post" : {
+        "description" : "Create a custom AnnotationSetting form schema.",
+        "operationId" : "CreateCustomAnnotationSetting",
+        "requestBody" : {
+          "content" : {
+            "*/*" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/CustomAnnotationSettingRequest"
+              }
+            }
+          }
+        },
+        "responses" : {
+          "default" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/AnnotationSettingFormVo"
+                }
+              }
+            },
+            "description" : "default response"
+          }
+        },
+        "tags" : [ "api.annotation-manager.wenjing.com/v1alpha1/AnnotationMetadata" ]
+      }
+    },
+    "/apis/api.annotation-manager.wenjing.com/v1alpha1/annotation-settings/{name}/custom" : {
+      "delete" : {
+        "description" : "Delete a custom AnnotationSetting form schema created by this plugin.",
+        "operationId" : "DeleteCustomAnnotationSetting",
+        "parameters" : [ {
+          "in" : "path",
+          "name" : "name",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "default" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/CleanupResultVo"
+                }
+              }
+            },
+            "description" : "default response"
+          }
+        },
+        "tags" : [ "api.annotation-manager.wenjing.com/v1alpha1/AnnotationMetadata" ]
+      },
+      "put" : {
+        "description" : "Update a custom AnnotationSetting form schema created by this plugin.",
+        "operationId" : "UpdateCustomAnnotationSetting",
+        "parameters" : [ {
+          "in" : "path",
+          "name" : "name",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "requestBody" : {
+          "content" : {
+            "*/*" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/CustomAnnotationSettingRequest"
+              }
+            }
+          }
+        },
+        "responses" : {
+          "default" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/AnnotationSettingFormVo"
+                }
+              }
+            },
+            "description" : "default response"
+          }
+        },
+        "tags" : [ "api.annotation-manager.wenjing.com/v1alpha1/AnnotationMetadata" ]
+      }
+    },
     "/apis/api.annotation-manager.wenjing.com/v1alpha1/annotation-settings/{name}/delete" : {
       "post" : {
         "description" : "Delete a duplicate AnnotationSetting after explicit confirmation.",
@@ -563,6 +652,9 @@
           "confidence" : {
             "type" : "string"
           },
+          "creationTimestamp" : {
+            "type" : "string"
+          },
           "effective" : {
             "type" : "boolean"
           },
@@ -575,7 +667,13 @@
           "name" : {
             "type" : "string"
           },
+          "sourceDisplayName" : {
+            "type" : "string"
+          },
           "sourceName" : {
+            "type" : "string"
+          },
+          "sourceSubtype" : {
             "type" : "string"
           },
           "sourceType" : {
@@ -760,6 +858,24 @@
             "example" : "/a/b/c"
           }
         }
+      },
+      "CustomAnnotationSettingRequest" : {
+        "type" : "object",
+        "properties" : {
+          "formSchema" : {
+            "type" : "array",
+            "items" : {
+              "type" : "object"
+            }
+          },
+          "name" : {
+            "type" : "string"
+          },
+          "targetRef" : {
+            "type" : "string"
+          }
+        },
+        "description" : "Request for creating a custom AnnotationSetting form."
       },
       "DeleteSettingPreviewVo" : {
         "type" : "object",

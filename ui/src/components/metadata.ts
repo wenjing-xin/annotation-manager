@@ -66,6 +66,30 @@ export function supportsValueScan(targetRef?: string) {
   return builtInModelItems.some((item) => item.value === targetRef)
 }
 
+export function fieldDefinitionKey(field: AnnotationFieldDefinition) {
+  return `${field.annotationSettingName || ''}\n${field.targetRef || ''}\n${field.annotationKey || ''}`
+}
+
+export function uniqueFieldDefinitions(fields: AnnotationFieldDefinition[]) {
+  const deduplicated = new Map<string, AnnotationFieldDefinition>()
+  fields.forEach((field) => {
+    deduplicated.set(fieldDefinitionKey(field), field)
+  })
+  return Array.from(deduplicated.values())
+}
+
+export function uniqueConflicts(conflicts: AnnotationConflictVo[]) {
+  const deduplicated = new Map<string, AnnotationConflictVo>()
+  conflicts.forEach((conflict) => {
+    const key = conflict.conflictKey || `${conflict.targetRef || ''}\n${conflict.annotationKey || ''}`
+    deduplicated.set(key, {
+      ...conflict,
+      definitions: uniqueFieldDefinitions(conflict.definitions || []),
+    })
+  })
+  return Array.from(deduplicated.values())
+}
+
 export interface MetadataModelSummary {
   targetRef: string
   displayName: string
@@ -87,6 +111,7 @@ export interface MetadataModelSummary {
   sourceCount: number
   effectiveFieldCount: number
   supportsValueScan: boolean
+  special?: 'annotation-settings'
 }
 
 export function buildModelSummaries(
@@ -95,6 +120,8 @@ export function buildModelSummaries(
   conflicts: AnnotationConflictVo[],
   valuesByModel: Record<string, AnnotationValueUsageVo[]>,
 ): MetadataModelSummary[] {
+  const dedupedFields = uniqueFieldDefinitions(fields)
+  const dedupedConflicts = uniqueConflicts(conflicts)
   const modelsByTargetRef = new Map<string, AnnotationModelVo>()
   models.forEach((model) => {
     if (model.targetRef) {
@@ -118,7 +145,7 @@ export function buildModelSummaries(
       })
     }
   })
-  fields.forEach((field) => {
+  dedupedFields.forEach((field) => {
     if (field.targetRef && !modelsByTargetRef.has(field.targetRef)) {
       const [group, kind] = field.targetRef.split('/')
       modelsByTargetRef.set(field.targetRef, {
@@ -133,7 +160,7 @@ export function buildModelSummaries(
     }
   })
 
-  return Array.from(modelsByTargetRef.values())
+  const summaries = Array.from(modelsByTargetRef.values())
     .sort((left, right) => {
       const sourceCompare = (left.sourceType || '').localeCompare(right.sourceType || '')
       if (sourceCompare) {
@@ -143,8 +170,8 @@ export function buildModelSummaries(
     })
     .map((model) => {
       const targetRef = model.targetRef || ''
-      const modelFields = fields.filter((field) => field.targetRef === targetRef)
-      const modelConflicts = conflicts.filter((conflict) => conflict.targetRef === targetRef)
+      const modelFields = dedupedFields.filter((field) => field.targetRef === targetRef)
+      const modelConflicts = dedupedConflicts.filter((conflict) => conflict.targetRef === targetRef)
       const sources = new Set(
         modelFields.map((field) => `${field.sourceType || 'unknown'}:${field.sourceName || ''}`),
       )
@@ -171,6 +198,26 @@ export function buildModelSummaries(
         supportsValueScan: Boolean(model.supportsValueScan || supportsValueScan(targetRef)),
       }
     })
+  return [
+    {
+      targetRef: '__annotation-settings',
+      displayName: 'AnnotationSetting',
+      sourceType: 'system',
+      sourceName: 'Halo',
+      sourceDisplayName: 'Halo',
+      confidence: 'special',
+      description: '元数据表单定义模型，用于治理主题和插件加载的 AnnotationSetting。每个来源和目标模型只保留最新一份定义。',
+      descriptionSource: 'special',
+      fieldCount: dedupedFields.length,
+      conflictCount: dedupedFields.filter((field) => field.duplicate).length,
+      valueKeyCount: 0,
+      sourceCount: new Set(dedupedFields.map((field) => `${field.sourceType || 'unknown'}:${field.sourceName || ''}`)).size,
+      effectiveFieldCount: dedupedFields.filter((field) => field.effective).length,
+      supportsValueScan: false,
+      special: 'annotation-settings',
+    },
+    ...summaries,
+  ]
 }
 
 export function sourceTypeLabel(sourceType?: string) {

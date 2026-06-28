@@ -14,6 +14,7 @@ export * from './cleanup-preview-vo';
 export * from './cleanup-request';
 export * from './cleanup-result-vo';
 export * from './copy-operation';
+export * from './custom-annotation-setting-request';
 export * from './delete-setting-preview-vo';
 export * from './delete-setting-request';
 export * from './json-patch-inner';

@@ -28,6 +28,12 @@ export interface AnnotationSettingFormVo {
     'confidence'?: string;
     /**
      * 
+     * @type {string}
+     * @memberof AnnotationSettingFormVo
+     */
+    'creationTimestamp'?: string;
+    /**
+     * 
      * @type {boolean}
      * @memberof AnnotationSettingFormVo
      */
@@ -49,7 +55,19 @@ export interface AnnotationSettingFormVo {
      * @type {string}
      * @memberof AnnotationSettingFormVo
      */
+    'sourceDisplayName'?: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof AnnotationSettingFormVo
+     */
     'sourceName'?: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof AnnotationSettingFormVo
+     */
+    'sourceSubtype'?: string;
     /**
      * 
      * @type {string}

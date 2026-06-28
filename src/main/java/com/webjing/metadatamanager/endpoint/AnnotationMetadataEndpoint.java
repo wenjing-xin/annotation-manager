@@ -21,6 +21,7 @@ import com.webjing.metadatamanager.vo.AnnotationValueUsageVo;
 import com.webjing.metadatamanager.vo.CleanupPreviewVo;
 import com.webjing.metadatamanager.vo.CleanupRequest;
 import com.webjing.metadatamanager.vo.CleanupResultVo;
+import com.webjing.metadatamanager.vo.CustomAnnotationSettingRequest;
 import com.webjing.metadatamanager.vo.DeleteSettingPreviewVo;
 import com.webjing.metadatamanager.vo.DeleteSettingRequest;
 import com.webjing.metadatamanager.vo.ModelAnnotationValuesScanRequest;
@@ -69,6 +70,25 @@ public class AnnotationMetadataEndpoint implements CustomEndpoint {
                     .tag(tag)
                     .parameter(parameterBuilder().name("targetRef").in(ParameterIn.QUERY).required(true))
                     .response(responseBuilder().implementationArray(AnnotationSettingFormVo.class)))
+            .POST("/annotation-settings/custom", this::createCustomSetting,
+                builder -> builder.operationId("CreateCustomAnnotationSetting")
+                    .description("Create a custom AnnotationSetting form schema.")
+                    .tag(tag)
+                    .requestBody(requestBodyBuilder().implementation(CustomAnnotationSettingRequest.class))
+                    .response(responseBuilder().implementation(AnnotationSettingFormVo.class)))
+            .PUT("/annotation-settings/{name}/custom", this::updateCustomSetting,
+                builder -> builder.operationId("UpdateCustomAnnotationSetting")
+                    .description("Update a custom AnnotationSetting form schema created by this plugin.")
+                    .tag(tag)
+                    .parameter(parameterBuilder().name("name").in(ParameterIn.PATH).required(true))
+                    .requestBody(requestBodyBuilder().implementation(CustomAnnotationSettingRequest.class))
+                    .response(responseBuilder().implementation(AnnotationSettingFormVo.class)))
+            .DELETE("/annotation-settings/{name}/custom", this::deleteCustomSetting,
+                builder -> builder.operationId("DeleteCustomAnnotationSetting")
+                    .description("Delete a custom AnnotationSetting form schema created by this plugin.")
+                    .tag(tag)
+                    .parameter(parameterBuilder().name("name").in(ParameterIn.PATH).required(true))
+                    .response(responseBuilder().implementation(CleanupResultVo.class)))
             .POST("/annotation-resources/list", this::listAnnotationResources,
                 builder -> builder.operationId("ListAnnotationResources")
                     .description("List resources of one supported model and their metadata.annotations.")
@@ -148,6 +168,27 @@ public class AnnotationMetadataEndpoint implements CustomEndpoint {
     private Mono<ServerResponse> listSettingForms(ServerRequest request) {
         return settingScanner.scanSettingForms(request.queryParam("targetRef").orElse(null))
             .flatMap(forms -> ServerResponse.ok().bodyValue(forms))
+            .onErrorResume(this::badRequest);
+    }
+
+    private Mono<ServerResponse> createCustomSetting(ServerRequest request) {
+        return request.bodyToMono(CustomAnnotationSettingRequest.class)
+            .flatMap(settingScanner::createCustomSetting)
+            .flatMap(form -> ServerResponse.ok().bodyValue(form))
+            .onErrorResume(this::badRequest);
+    }
+
+    private Mono<ServerResponse> updateCustomSetting(ServerRequest request) {
+        var name = request.pathVariable("name");
+        return request.bodyToMono(CustomAnnotationSettingRequest.class)
+            .flatMap(body -> settingScanner.updateCustomSetting(name, body))
+            .flatMap(form -> ServerResponse.ok().bodyValue(form))
+            .onErrorResume(this::badRequest);
+    }
+
+    private Mono<ServerResponse> deleteCustomSetting(ServerRequest request) {
+        return settingScanner.deleteCustomSetting(request.pathVariable("name"))
+            .flatMap(result -> ServerResponse.ok().bodyValue(result))
             .onErrorResume(this::badRequest);
     }
 

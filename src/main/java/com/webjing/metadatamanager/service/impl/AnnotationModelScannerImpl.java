@@ -65,7 +65,7 @@ public class AnnotationModelScannerImpl implements AnnotationModelScanner {
             scheme.type().getName(),
             description.text(),
             description.source(),
-            supportsValueScan(group, gvk.kind())
+            supportsValueScan(scheme)
         );
     }
 
@@ -171,12 +171,8 @@ public class AnnotationModelScannerImpl implements AnnotationModelScanner {
         return lastDot > 0 ? className.substring(0, lastDot) : null;
     }
 
-    private boolean supportsValueScan(String group, String kind) {
-        return "content.halo.run".equals(group)
-            && switch (kind) {
-                case "Post", "SinglePage", "Category", "Tag" -> true;
-                default -> false;
-            };
+    private boolean supportsValueScan(Scheme scheme) {
+        return run.halo.app.extension.AbstractExtension.class.isAssignableFrom(scheme.type());
     }
 
     private String nullSafe(String value) {

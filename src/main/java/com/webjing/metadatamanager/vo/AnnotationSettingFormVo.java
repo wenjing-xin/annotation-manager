@@ -9,8 +9,11 @@ public record AnnotationSettingFormVo(
     String targetRef,
     String sourceType,
     String sourceName,
+    String sourceDisplayName,
+    String creationTimestamp,
     boolean effective,
     String confidence,
+    String sourceSubtype,
     List<Object> formSchema
 ) {
 }

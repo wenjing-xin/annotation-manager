@@ -3,6 +3,7 @@ package com.webjing.metadatamanager.service.impl;
 import com.webjing.metadatamanager.service.AnnotationCleanupService;
 import com.webjing.metadatamanager.service.AnnotationSettingScanner;
 import com.webjing.metadatamanager.service.AnnotationValueScanner;
+import com.webjing.metadatamanager.vo.AnnotationFieldDefinition;
 import com.webjing.metadatamanager.vo.BackupVo;
 import com.webjing.metadatamanager.vo.CleanupPreviewVo;
 import com.webjing.metadatamanager.vo.CleanupRequest;
@@ -10,18 +11,25 @@ import com.webjing.metadatamanager.vo.CleanupResultVo;
 import com.webjing.metadatamanager.vo.DeleteSettingPreviewVo;
 import com.webjing.metadatamanager.vo.DeleteSettingRequest;
 import java.time.Instant;
+import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Objects;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Component;
 import reactor.core.publisher.Mono;
 import run.halo.app.core.extension.AnnotationSetting;
+import run.halo.app.core.extension.Theme;
 import run.halo.app.extension.AbstractExtension;
+import run.halo.app.extension.ListOptions;
 import run.halo.app.extension.ReactiveExtensionClient;
 
 @Component
 @RequiredArgsConstructor
 public class AnnotationCleanupServiceImpl implements AnnotationCleanupService {
+
+    private static final String PLUGIN_NAME_LABEL = "plugin.halo.run/plugin-name";
 
     private final ReactiveExtensionClient client;
     private final AnnotationSettingScanner settingScanner;
@@ -29,24 +37,84 @@ public class AnnotationCleanupServiceImpl implements AnnotationCleanupService {
 
     @Override
     public Mono<DeleteSettingPreviewVo> previewDeleteSetting(String name) {
-        return Mono.zip(client.fetch(AnnotationSetting.class, name), settingScanner.scanFields())
-            .map(tuple -> {
-                var setting = tuple.getT1();
-                if (setting.getMetadata().getDeletionTimestamp() != null) {
-                    throw new IllegalArgumentException("AnnotationSetting is already deleting: " + name);
-                }
-                var fields = tuple.getT2().stream()
-                    .filter(field -> name.equals(field.annotationSettingName()))
-                    .toList();
-                var duplicate = fields.stream().anyMatch(field -> field.duplicate());
-                if (!duplicate) {
-                    throw new IllegalArgumentException("AnnotationSetting is not duplicated: " + name);
-                }
-                return new DeleteSettingPreviewVo(name, true, fields, settingBackup(setting),
-                    List.of("Deleting a definition does not delete stored metadata.annotations values.",
-                        "A plugin or theme restart may recreate this AnnotationSetting.",
-                        "MVP deletes the whole AnnotationSetting, not one field from a multi-field setting."));
-            });
+        return client.fetch(AnnotationSetting.class, name)
+            .flatMap(setting -> Mono.zip(settingScanner.scanFields(),
+                    isSupersededByNewerSourceTargetSetting(setting))
+                .map(tuple -> {
+                    if (setting.getMetadata().getDeletionTimestamp() != null) {
+                        throw new IllegalArgumentException("AnnotationSetting is already deleting: " + name);
+                    }
+                    var fields = tuple.getT1().stream()
+                        .filter(field -> name.equals(field.annotationSettingName()))
+                        .toList();
+                    var sourceTargetDuplicate = tuple.getT2();
+                    var duplicate = fields.stream().anyMatch(field -> field.duplicate())
+                        || sourceTargetDuplicate;
+                    if (!duplicate) {
+                        throw new IllegalArgumentException("AnnotationSetting is not duplicated: " + name);
+                    }
+                    var previewFields = sourceTargetDuplicate
+                        ? fields.stream().map(field -> field.withDuplicate(true)).toList()
+                        : fields;
+                    return new DeleteSettingPreviewVo(name, true, previewFields,
+                        settingBackup(setting),
+                        List.of(
+                            "Deleting a definition does not delete stored metadata.annotations values.",
+                            "A plugin or theme restart may recreate this AnnotationSetting.",
+                            "Only the latest AnnotationSetting is kept for the same source and target model.",
+                            "MVP deletes the whole AnnotationSetting, not one field from a multi-field setting."));
+                }));
+    }
+
+    private Mono<Boolean> isSupersededByNewerSourceTargetSetting(AnnotationSetting setting) {
+        var sourceTargetKey = sourceTargetKey(setting);
+        var currentName = setting.getMetadata().getName();
+        return client.listAll(AnnotationSetting.class, ListOptions.builder().build(),
+                Sort.by("metadata.name").ascending())
+            .filter(candidate -> candidate.getMetadata().getDeletionTimestamp() == null)
+            .filter(candidate -> !Objects.equals(currentName, candidate.getMetadata().getName()))
+            .filter(candidate -> Objects.equals(sourceTargetKey, sourceTargetKey(candidate)))
+            .any(candidate -> compareRecency(candidate, setting) > 0);
+    }
+
+    private int compareRecency(AnnotationSetting left, AnnotationSetting right) {
+        return Comparator.comparing(this::creationInstant,
+                Comparator.nullsFirst(Comparator.naturalOrder()))
+            .thenComparing(setting -> setting.getMetadata().getName(),
+                Comparator.nullsFirst(String::compareTo))
+            .compare(left, right);
+    }
+
+    private Instant creationInstant(AnnotationSetting setting) {
+        return setting.getMetadata() == null ? null : setting.getMetadata().getCreationTimestamp();
+    }
+
+    private String sourceTargetKey(AnnotationSetting setting) {
+        return targetRef(setting) + "\n" + sourceKey(setting);
+    }
+
+    private String sourceKey(AnnotationSetting setting) {
+        var labels = setting.getMetadata().getLabels();
+        if (labels == null) {
+            return "unknown\n";
+        }
+        var pluginName = labels.get(PLUGIN_NAME_LABEL);
+        if (pluginName != null && !pluginName.isBlank()) {
+            return "plugin\n" + pluginName;
+        }
+        var themeName = labels.get(Theme.THEME_NAME_LABEL);
+        if (themeName != null && !themeName.isBlank()) {
+            return "theme\n" + themeName;
+        }
+        return "unknown\n";
+    }
+
+    private String targetRef(AnnotationSetting setting) {
+        if (setting.getSpec() == null || setting.getSpec().getTargetRef() == null) {
+            return "/";
+        }
+        var targetRef = setting.getSpec().getTargetRef();
+        return targetRef.group() + "/" + targetRef.kind();
     }
 
     @Override
