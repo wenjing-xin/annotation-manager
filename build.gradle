@@ -59,7 +59,7 @@ halo {
 
 haloPlugin {
     openApi {
-        useExistingServer = true
+        useExistingServer = false
         outputDir = file("$rootDir/api-docs/openapi/v3_0")
         groupingRules {
             annotationManagerApi {
