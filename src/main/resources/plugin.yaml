@@ -3,6 +3,8 @@ kind: Plugin
 metadata:
   # The name defines how the plugin is invoked, A unique name
   name: annotation-manager
+  annotations:
+    "store.halo.run/recommended-apps": '["app-ghvbuxqq"]'
 spec:
   enabled: true
   requires: ">=2.25.0"
