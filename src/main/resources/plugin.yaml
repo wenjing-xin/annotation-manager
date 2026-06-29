@@ -8,7 +8,7 @@ spec:
   requires: ">=2.25.0"
   author:
     name: webjing
-    website: https://github.com/webjing
+    website: https://auth.webjing.com
   logo: logo.png
   homepage: https://github.com/wenjing-xin/annotation-manager#readme
   repo: https://github.com/wenjing-xin/annotation-manager
@@ -17,4 +17,4 @@ spec:
   description: "帮助管理员排查、归因和治理 Halo 主题/插件扩展的元数据表单字段，同时支持为自定义数据模型增加可视化元数据表单。"
   license:
     - name: "GPL-3.0"
-      url: "https://github.com/wenjing-xin/annotation-manager/blob/main/LICENSE"
+      url: "https://github.com/wenjing-xin/annotation-manager?tab=GPL-3.0-1-ov-file"
