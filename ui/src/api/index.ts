@@ -31,3 +31,5 @@ export const annotationManagerApi = Object.assign(generatedAnnotationManagerApi,
     )
   },
 })
+
+export * from './generated'
