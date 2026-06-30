@@ -172,7 +172,7 @@ public class AnnotationModelScannerImpl implements AnnotationModelScanner {
     }
 
     private boolean supportsValueScan(Scheme scheme) {
-        return run.halo.app.extension.AbstractExtension.class.isAssignableFrom(scheme.type());
+        return run.halo.app.extension.Extension.class.isAssignableFrom(scheme.type());
     }
 
     private String nullSafe(String value) {

@@ -161,25 +161,26 @@ async function loadSelectedModelDetails() {
   const canLoadResources = selectedModelSupportsResources.value
   resourceLoading.value = true
   try {
-    const [formsResponse, resourcesResponse] = await Promise.all([
-      annotationManagerApi.listAnnotationSettingForms({ targetRef }),
-      canLoadResources
-        ? annotationManagerApi.listAnnotationResources({
-            annotationResourceListRequest: {
-              targetRef,
-            },
-          }).catch((error) => {
-            if (isNotFoundError(error)) {
-              return { data: [] as AnnotationResourceVo[] }
-            }
-            throw error
-          })
-        : Promise.resolve({ data: [] as AnnotationResourceVo[] }),
-    ])
+    const formsResponse = await annotationManagerApi.listAnnotationSettingForms({ targetRef })
     settingFormsByModel.value = {
       ...settingFormsByModel.value,
       [targetRef]: filterDeletedForms(formsResponse.data),
     }
+
+    const resourcesResponse = canLoadResources
+      ? await annotationManagerApi.listAnnotationResources({
+          annotationResourceListRequest: {
+            targetRef,
+          },
+        }).catch((error) => {
+          if (isResourceUnavailableError(error)) {
+            Toast.warning('当前模型数据列表暂不可加载，元数据表单定义仍可查看')
+            return { data: [] as AnnotationResourceVo[] }
+          }
+          throw error
+        })
+      : { data: [] as AnnotationResourceVo[] }
+
     resourcesByModel.value = {
       ...resourcesByModel.value,
       [targetRef]: resourcesResponse.data,
@@ -216,7 +217,7 @@ async function scanSelectedModelValues() {
       [targetRef]: response.data,
     }
   } catch (error) {
-    if (isNotFoundError(error)) {
+    if (isResourceUnavailableError(error)) {
       valuesByModel.value = {
         ...valuesByModel.value,
         [targetRef]: [],
@@ -594,6 +595,14 @@ function errorMessage(error: unknown) {
 
 function isNotFoundError(error: unknown) {
   return (error as { response?: { status?: number } }).response?.status === 404
+}
+
+function isResourceUnavailableError(error: unknown) {
+  const maybeError = error as { response?: { status?: number; data?: { error?: string; message?: string } }; message?: string }
+  const message = maybeError.response?.data?.error || maybeError.response?.data?.message || maybeError.message || ''
+  return maybeError.response?.status === 404
+    || message.includes('Unsupported targetRef')
+    || message.includes('No static resource')
 }
 
 function clearModelFilters() {

@@ -10,7 +10,7 @@ import com.webjing.metadatamanager.vo.ModelAnnotationValuesScanRequest;
 import java.util.List;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
-import run.halo.app.extension.AbstractExtension;
+import run.halo.app.extension.Extension;
 
 public interface AnnotationValueScanner {
     Mono<AnnotationValueUsageVo> scan(AnnotationValueScanRequest request);
@@ -24,5 +24,5 @@ public interface AnnotationValueScanner {
 
     Mono<BackupVo> backup(String targetRef, String annotationKey);
 
-    Flux<? extends AbstractExtension> resourcesWithKey(String targetRef, String annotationKey);
+    Flux<? extends Extension> resourcesWithKey(String targetRef, String annotationKey);
 }

@@ -21,11 +21,13 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Component;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
-import run.halo.app.extension.AbstractExtension;
+import run.halo.app.extension.Extension;
+import run.halo.app.extension.GroupVersionKind;
 import run.halo.app.extension.ListOptions;
 import run.halo.app.extension.ReactiveExtensionClient;
 import run.halo.app.extension.Scheme;
 import run.halo.app.extension.SchemeManager;
+import run.halo.app.extension.Unstructured;
 
 @Component
 @RequiredArgsConstructor
@@ -37,12 +39,12 @@ public class AnnotationValueScannerImpl implements AnnotationValueScanner {
     @Override
     public Mono<AnnotationValueUsageVo> scan(AnnotationValueScanRequest request) {
         validateScanRequest(request.targetRef(), request.annotationKey());
-        var clazz = resolveSupportedTargetClass(request.targetRef());
-        if (clazz == null) {
+        var target = resolveTargetSchemeIfAvailable(request.targetRef());
+        if (target == null) {
             return Mono.just(usage(List.of(), request.targetRef(), request.annotationKey(),
                 request.normalizedSampleSize()));
         }
-        return listAllIfAvailable(clazz)
+        return listAllIfAvailable(target)
             .collectList()
             .map(resources -> usage(resources, request.targetRef(), request.annotationKey(),
                 request.normalizedSampleSize()));
@@ -51,11 +53,11 @@ public class AnnotationValueScannerImpl implements AnnotationValueScanner {
     @Override
     public Mono<List<AnnotationValueUsageVo>> scanModel(ModelAnnotationValuesScanRequest request) {
         validateTargetRefValue(request.targetRef());
-        var clazz = resolveSupportedTargetClass(request.targetRef());
-        if (clazz == null) {
+        var target = resolveTargetSchemeIfAvailable(request.targetRef());
+        if (target == null) {
             return Mono.just(List.of());
         }
-        return listAllIfAvailable(clazz)
+        return listAllIfAvailable(target)
             .collectList()
             .map(resources -> {
                 var annotationKeys = new LinkedHashSet<String>();
@@ -71,11 +73,11 @@ public class AnnotationValueScannerImpl implements AnnotationValueScanner {
     @Override
     public Mono<List<AnnotationResourceVo>> listResources(String targetRef) {
         validateTargetRefValue(targetRef);
-        var clazz = resolveSupportedTargetClass(targetRef);
-        if (clazz == null) {
+        var target = resolveTargetSchemeIfAvailable(targetRef);
+        if (target == null) {
             return Mono.just(List.of());
         }
-        return listAllIfAvailable(clazz)
+        return listAllIfAvailable(target)
             .map(resource -> new AnnotationResourceVo(
                 targetRef,
                 resource.getApiVersion(),
@@ -91,8 +93,8 @@ public class AnnotationValueScannerImpl implements AnnotationValueScanner {
     public Mono<AnnotationResourceUpdateResultVo> updateResourceAnnotations(
         AnnotationResourceMetadataUpdateRequest request) {
         validateResourceUpdateRequest(request);
-        var clazz = resolveTargetClass(request.targetRef());
-        return client.fetch(clazz, request.name())
+        var target = resolveTargetScheme(request.targetRef());
+        return client.fetch(target.gvk(), request.name())
             .flatMap(resource -> {
                 var backup = resourceBackup(request.targetRef(), resource);
                 var annotations = replaceAnnotationsOnly(resource, request.annotations());
@@ -106,7 +108,7 @@ public class AnnotationValueScannerImpl implements AnnotationValueScanner {
             });
     }
 
-    static LinkedHashMap<String, String> replaceAnnotationsOnly(AbstractExtension resource,
+    static LinkedHashMap<String, String> replaceAnnotationsOnly(Extension resource,
         Map<String, String> nextAnnotations) {
         var annotations = new LinkedHashMap<String, String>();
         if (nextAnnotations != null) {
@@ -123,12 +125,12 @@ public class AnnotationValueScannerImpl implements AnnotationValueScanner {
     @Override
     public Mono<BackupVo> backup(String targetRef, String annotationKey) {
         validateScanRequest(targetRef, annotationKey);
-        var clazz = resolveSupportedTargetClass(targetRef);
-        if (clazz == null) {
+        var target = resolveTargetSchemeIfAvailable(targetRef);
+        if (target == null) {
             return Mono.just(new BackupVo(Instant.now().toString(), "annotation-value-cleanup",
                 targetRef, annotationKey, List.of()));
         }
-        return listAllIfAvailable(clazz)
+        return listAllIfAvailable(target)
             .filter(resource -> annotations(resource).containsKey(annotationKey))
             .map(resource -> backupItem(resource, annotationKey))
             .collectList()
@@ -136,17 +138,17 @@ public class AnnotationValueScannerImpl implements AnnotationValueScanner {
                 targetRef, annotationKey, items));
     }
 
-    public Flux<? extends AbstractExtension> resourcesWithKey(String targetRef, String annotationKey) {
+    public Flux<? extends Extension> resourcesWithKey(String targetRef, String annotationKey) {
         validateScanRequest(targetRef, annotationKey);
-        var clazz = resolveSupportedTargetClass(targetRef);
-        if (clazz == null) {
+        var target = resolveTargetSchemeIfAvailable(targetRef);
+        if (target == null) {
             return Flux.empty();
         }
-        return listAllIfAvailable(clazz)
+        return listAllIfAvailable(target)
             .filter(resource -> annotations(resource).containsKey(annotationKey));
     }
 
-    public Map<String, String> annotations(AbstractExtension resource) {
+    public Map<String, String> annotations(Extension resource) {
         var metadata = resource.getMetadata();
         if (metadata == null || metadata.getAnnotations() == null) {
             return Map.of();
@@ -154,16 +156,30 @@ public class AnnotationValueScannerImpl implements AnnotationValueScanner {
         return metadata.getAnnotations();
     }
 
-    private <T extends AbstractExtension> Flux<T> listAll(Class<T> clazz) {
-        return client.listAll(clazz, ListOptions.builder().build(), Sort.by("metadata.name").ascending());
-    }
-
-    private <T extends AbstractExtension> Flux<T> listAllIfAvailable(Class<T> clazz) {
-        return listAll(clazz)
+    private Flux<? extends Extension> listAllIfAvailable(TargetScheme target) {
+        return listAllAsUnstructured(target)
             .onErrorResume(error -> isMissingResourceRoute(error) ? Flux.empty() : Flux.error(error));
     }
 
-    private AnnotationValueUsageVo usage(List<? extends AbstractExtension> resources, String targetRef,
+    private Flux<? extends Extension> listAllAsUnstructured(TargetScheme target) {
+        return client.listAllNames(target.type(), ListOptions.builder().build(), metadataNameSort())
+            .onErrorResume(error -> isMissingResourceRoute(error)
+                ? listAllNamesFromIndex(target)
+                : Flux.error(error))
+            .flatMap(name -> client.fetch(target.gvk(), name));
+    }
+
+    @SuppressWarnings("removal")
+    private Flux<String> listAllNamesFromIndex(TargetScheme target) {
+        return Flux.defer(() -> Flux.fromIterable(client.indexedQueryEngine()
+            .retrieveAll(target.gvk(), ListOptions.builder().build(), metadataNameSort())));
+    }
+
+    private Sort metadataNameSort() {
+        return Sort.by("metadata.name").ascending();
+    }
+
+    private AnnotationValueUsageVo usage(List<? extends Extension> resources, String targetRef,
         String annotationKey, int sampleSize) {
         var sampleResourceNames = new ArrayList<String>();
         var sampleValues = new LinkedHashMap<String, String>();
@@ -189,7 +205,7 @@ public class AnnotationValueScannerImpl implements AnnotationValueScanner {
             nonEmpty, sampleResourceNames, sampleValues);
     }
 
-    private Map<String, Object> backupItem(AbstractExtension resource, String annotationKey) {
+    private Map<String, Object> backupItem(Extension resource, String annotationKey) {
         var item = new LinkedHashMap<String, Object>();
         item.put("apiVersion", resource.getApiVersion());
         item.put("kind", resource.getKind());
@@ -200,12 +216,12 @@ public class AnnotationValueScannerImpl implements AnnotationValueScanner {
         return item;
     }
 
-    private BackupVo resourceBackup(String targetRef, AbstractExtension resource) {
+    private BackupVo resourceBackup(String targetRef, Extension resource) {
         return new BackupVo(Instant.now().toString(), "annotation-resource-update",
             targetRef, null, List.of(resourceBackupItem(resource)));
     }
 
-    private Map<String, Object> resourceBackupItem(AbstractExtension resource) {
+    private Map<String, Object> resourceBackupItem(Extension resource) {
         var item = new LinkedHashMap<String, Object>();
         item.put("apiVersion", resource.getApiVersion());
         item.put("kind", resource.getKind());
@@ -223,7 +239,7 @@ public class AnnotationValueScannerImpl implements AnnotationValueScanner {
 
     private void validateTargetRef(String targetRef) {
         validateTargetRefValue(targetRef);
-        resolveTargetClass(targetRef);
+        resolveTargetScheme(targetRef);
     }
 
     private void validateTargetRefValue(String targetRef) {
@@ -245,7 +261,7 @@ public class AnnotationValueScannerImpl implements AnnotationValueScanner {
         }
     }
 
-    private String displayName(AbstractExtension resource) {
+    private String displayName(Extension resource) {
         for (var methodName : List.of("getTitle", "getDisplayName", "getSlug")) {
             var value = specStringValue(resource, methodName);
             if (value != null && !value.isBlank()) {
@@ -255,7 +271,14 @@ public class AnnotationValueScannerImpl implements AnnotationValueScanner {
         return resource.getMetadata().getName();
     }
 
-    private String specStringValue(AbstractExtension resource, String methodName) {
+    private String specStringValue(Extension resource, String methodName) {
+        if (resource instanceof Unstructured unstructured) {
+            var propertyName = methodName.substring(3, 4).toLowerCase() + methodName.substring(4);
+            return Unstructured.getNestedValue(unstructured.getData(), "spec", propertyName)
+                .map(String::valueOf)
+                .filter(value -> !value.isBlank())
+                .orElse(null);
+        }
         try {
             Method getSpec = resource.getClass().getMethod("getSpec");
             var spec = getSpec.invoke(resource);
@@ -270,33 +293,25 @@ public class AnnotationValueScannerImpl implements AnnotationValueScanner {
         }
     }
 
-    private Class<? extends AbstractExtension> resolveTargetClass(String targetRef) {
-        return resolveTargetClassIfAvailable(targetRef)
+    private TargetScheme resolveTargetScheme(String targetRef) {
+        return findTargetScheme(targetRef)
             .orElseThrow(() -> new IllegalArgumentException("Unsupported targetRef: " + targetRef));
     }
 
-    private Class<? extends AbstractExtension> resolveSupportedTargetClass(String targetRef) {
-        return resolveTargetClassIfAvailable(targetRef).orElse(null);
+    private TargetScheme resolveTargetSchemeIfAvailable(String targetRef) {
+        return findTargetScheme(targetRef).orElse(null);
     }
 
-    private java.util.Optional<Class<? extends AbstractExtension>> resolveTargetClassIfAvailable(
-        String targetRef) {
+    private java.util.Optional<TargetScheme> findTargetScheme(String targetRef) {
         return schemeManager.schemes().stream()
             .filter(scheme -> targetRef(scheme).equals(targetRef))
-            .map(Scheme::type)
-            .filter(AbstractExtension.class::isAssignableFrom)
-            .map(this::asExtensionClass)
+            .map(scheme -> new TargetScheme(scheme.type(), scheme.groupVersionKind()))
             .findFirst();
     }
 
     private String targetRef(Scheme scheme) {
         var gvk = scheme.groupVersionKind();
         return gvk.group() + "/" + gvk.kind();
-    }
-
-    @SuppressWarnings("unchecked")
-    private Class<? extends AbstractExtension> asExtensionClass(Class<?> type) {
-        return (Class<? extends AbstractExtension>) type;
     }
 
     private boolean isMissingResourceRoute(Throwable error) {
@@ -307,5 +322,8 @@ public class AnnotationValueScannerImpl implements AnnotationValueScanner {
         return error.getClass().getName().contains("NotFound")
             || message.contains("404")
             || message.contains("No static resource");
+    }
+
+    private record TargetScheme(Class<? extends Extension> type, GroupVersionKind gvk) {
     }
 }

@@ -21,7 +21,7 @@ import org.springframework.stereotype.Component;
 import reactor.core.publisher.Mono;
 import run.halo.app.core.extension.AnnotationSetting;
 import run.halo.app.core.extension.Theme;
-import run.halo.app.extension.AbstractExtension;
+import run.halo.app.extension.Extension;
 import run.halo.app.extension.ListOptions;
 import run.halo.app.extension.ReactiveExtensionClient;
 
@@ -142,7 +142,6 @@ public class AnnotationCleanupServiceImpl implements AnnotationCleanupService {
         validateCleanupRequest(request, true);
         return previewCleanupValues(request)
             .flatMap(preview -> valueScanner.resourcesWithKey(request.targetRef(), request.annotationKey())
-                .cast(AbstractExtension.class)
                 .flatMap(resource -> {
                     removeAnnotationKey(resource, request.annotationKey());
                     return client.update(resource);
@@ -179,7 +178,7 @@ public class AnnotationCleanupServiceImpl implements AnnotationCleanupService {
             null, null, List.of(item));
     }
 
-    static boolean removeAnnotationKey(AbstractExtension resource, String annotationKey) {
+    static boolean removeAnnotationKey(Extension resource, String annotationKey) {
         var annotations = resource.getMetadata().getAnnotations();
         if (annotations == null || !annotations.containsKey(annotationKey)) {
             return false;

@@ -4,6 +4,8 @@
 
 当多个主题或插件为同一个模型注册了相同的 annotation key 时，Halo Console 可能会渲染出重复字段。这个插件会把“字段来自哪里、是否冲突、能否安全删除、现有数据里有没有值”展示清楚，帮助站点管理员安全地整理元数据表单。
 
+![元数据字段管家从字段发现、来源归因到重复定义清理与存量值治理的使用闭环](docs/images/annotation-manager-usage.png)
+
 <div style="display: flex; gap: 10px; width: 100%;">
     <div style="flex: 1;">
         <img src="https://i.ibb.co/b5MQV5Pd/conflict-resolve.png" style="width: 100%;" alt="冲突定义页面">

@@ -1,0 +1,156 @@
+<svg xmlns="http://www.w3.org/2000/svg"
+     viewBox="0 0 1200 980" width="1200" height="980"
+     font-family="'PingFang SC', 'Microsoft YaHei', 'Noto Sans SC', Helvetica, Arial, sans-serif">
+  <defs>
+    <linearGradient id="canvasBg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#0F172A"/>
+      <stop offset="100%" style="stop-color:#1E293B"/>
+    </linearGradient>
+    <filter id="softShadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="3" result="blur"/>
+      <feOffset dx="0" dy="3" result="offset"/>
+      <feComponentTransfer><feFuncA type="linear" slope="0.45"/></feComponentTransfer>
+      <feMerge><feMergeNode/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+    <marker id="arrow-cyan" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+      <path d="M0,0 L10,5 L0,10 z" fill="#38BDF8"/>
+    </marker>
+    <marker id="arrow-green" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+      <path d="M0,0 L10,5 L0,10 z" fill="#34D399"/>
+    </marker>
+    <marker id="arrow-amber" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+      <path d="M0,0 L10,5 L0,10 z" fill="#FBBF24"/>
+    </marker>
+    <marker id="arrow-rose" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+      <path d="M0,0 L10,5 L0,10 z" fill="#FB7185"/>
+    </marker>
+  </defs>
+  <style>
+    .title-main { font-size: 24px; fill: #F1F5F9; text-anchor: middle; dominant-baseline: central; font-weight: 700; }
+    .title-accent { fill: #38BDF8; }
+    .subtitle { font-size: 14px; fill: #CBD5E1; text-anchor: middle; dominant-baseline: central; }
+    .root-title { font-size: 18px; fill: #F8FAFC; text-anchor: middle; dominant-baseline: central; font-weight: 700; }
+    .root-desc { font-size: 13px; fill: #CBD5E1; text-anchor: middle; dominant-baseline: central; }
+    .card-title { font-size: 18px; fill: #F8FAFC; font-weight: 700; dominant-baseline: central; }
+    .card-sub { font-size: 13px; fill: #CBD5E1; dominant-baseline: central; }
+    .section-label { font-size: 12px; fill: #94A3B8; font-weight: 600; letter-spacing: 0.5px; dominant-baseline: central; }
+    .body-text { font-size: 13px; fill: #E2E8F0; dominant-baseline: central; }
+    .code { font-family: 'SF Mono','Menlo',monospace; font-size: 12px; fill: #E2E8F0; dominant-baseline: central; }
+    .code-string { fill: #FCD34D; }
+    .code-type { fill: #A5F3FC; }
+    .code-out { fill: #86EFAC; }
+    .pill-txt { font-size: 12px; font-weight: 700; text-anchor: middle; dominant-baseline: central; }
+    .step-num { font-family: 'SF Mono','Menlo',monospace; font-size: 24px; font-weight: 800; fill: #0F172A; text-anchor: middle; dominant-baseline: central; }
+    .footer-text { font-size: 13px; fill: #CBD5E1; dominant-baseline: central; }
+    .footer-em { fill: #38BDF8; font-weight: 600; }
+  </style>
+
+  <rect width="1200" height="980" fill="url(#canvasBg)"/>
+
+  <text x="600" y="44" class="title-main">元数据字段管家<tspan class="title-accent"> · </tspan>从看见重复到安全治理</text>
+  <text x="600" y="76" class="subtitle">一张图看懂 Console 插件的使用路径、关键能力和安全边界</text>
+
+  <g transform="translate(70, 116)">
+    <rect x="0" y="0" width="1060" height="76" rx="12" fill="#0F1E2E" stroke="#38BDF8" stroke-width="1.5" filter="url(#softShadow)"/>
+    <rect x="0" y="0" width="5" height="76" rx="2" fill="#38BDF8"/>
+    <text x="530" y="28" class="root-title">进入 Halo Console 的工具菜单</text>
+    <text x="530" y="54" class="root-desc">打开元数据字段管家，先选择一个模型，再决定是查看、修复还是扩展</text>
+  </g>
+
+  <g stroke="#38BDF8" stroke-width="1.8" fill="none" opacity="0.85">
+    <path d="M335 192 C335 214, 335 224, 335 246" marker-end="url(#arrow-cyan)"/>
+    <path d="M335 358 C335 378, 335 388, 335 410" marker-end="url(#arrow-cyan)"/>
+    <path d="M335 522 C335 542, 335 552, 335 574" marker-end="url(#arrow-cyan)"/>
+    <path d="M335 686 C335 706, 335 716, 335 738" marker-end="url(#arrow-cyan)"/>
+  </g>
+
+  <g transform="translate(70, 246)">
+    <rect x="0" y="0" width="530" height="112" rx="12" fill="#0F1E2E" stroke="#334155" stroke-width="1" filter="url(#softShadow)"/>
+    <rect x="0" y="0" width="530" height="5" rx="12" fill="#38BDF8"/>
+    <rect x="0" y="3" width="530" height="4" fill="#38BDF8"/>
+    <circle cx="44" cy="56" r="24" fill="#38BDF8" filter="url(#softShadow)"/>
+    <text x="44" y="56" class="step-num">1</text>
+    <text x="82" y="34" class="card-title">选择模型</text>
+    <text x="82" y="60" class="body-text">左侧模型列表展示系统模型、插件模型和 AnnotationSetting 入口</text>
+    <text x="82" y="88" class="footer-text"><tspan fill="#38BDF8" font-weight="600">目的：</tspan>先定位要治理的 Post、Tag 或自定义数据模型</text>
+  </g>
+
+  <g transform="translate(70, 410)">
+    <rect x="0" y="0" width="530" height="112" rx="12" fill="#2D1B3D" stroke="#334155" stroke-width="1" filter="url(#softShadow)"/>
+    <rect x="0" y="0" width="530" height="5" rx="12" fill="#A78BFA"/>
+    <rect x="0" y="3" width="530" height="4" fill="#A78BFA"/>
+    <circle cx="44" cy="56" r="24" fill="#A78BFA" filter="url(#softShadow)"/>
+    <text x="44" y="56" class="step-num">2</text>
+    <text x="82" y="34" class="card-title">查看来源</text>
+    <text x="82" y="60" class="body-text">字段按插件、主题、系统和自定义分组，展示真实来源名称</text>
+    <text x="82" y="88" class="footer-text"><tspan fill="#A78BFA" font-weight="600">目的：</tspan>知道重复字段到底是谁扩展出来的</text>
+  </g>
+
+  <g transform="translate(70, 574)">
+    <rect x="0" y="0" width="530" height="112" rx="12" fill="#2A1F08" stroke="#334155" stroke-width="1" filter="url(#softShadow)"/>
+    <rect x="0" y="0" width="530" height="5" rx="12" fill="#FBBF24"/>
+    <rect x="0" y="3" width="530" height="4" fill="#FBBF24"/>
+    <circle cx="44" cy="56" r="24" fill="#FBBF24" filter="url(#softShadow)"/>
+    <text x="44" y="56" class="step-num">3</text>
+    <text x="82" y="34" class="card-title">处理冲突</text>
+    <text x="82" y="60" class="body-text">同一模型同一 annotation key 出现多份定义时标记为冲突</text>
+    <text x="82" y="88" class="footer-text"><tspan fill="#FBBF24" font-weight="600">操作：</tspan>预览后删除旧定义，保留最新一份表单</text>
+  </g>
+
+  <g transform="translate(70, 738)">
+    <rect x="0" y="0" width="530" height="112" rx="12" fill="#0F2A1F" stroke="#334155" stroke-width="1" filter="url(#softShadow)"/>
+    <rect x="0" y="0" width="530" height="5" rx="12" fill="#34D399"/>
+    <rect x="0" y="3" width="530" height="4" fill="#34D399"/>
+    <circle cx="44" cy="56" r="24" fill="#34D399" filter="url(#softShadow)"/>
+    <text x="44" y="56" class="step-num">4</text>
+    <text x="82" y="34" class="card-title">扩展自定义表单</text>
+    <text x="82" y="60" class="body-text">可视化新增、编辑、删除本插件创建的 AnnotationSetting</text>
+    <text x="82" y="88" class="footer-text"><tspan fill="#34D399" font-weight="600">适合：</tspan>给自定义数据模型补充元数据字段</text>
+  </g>
+
+  <g transform="translate(670, 246)">
+    <rect x="0" y="0" width="460" height="230" rx="12" fill="#0F1E2E" stroke="#334155" stroke-width="1" filter="url(#softShadow)"/>
+    <rect x="0" y="0" width="460" height="5" rx="12" fill="#38BDF8"/>
+    <rect x="0" y="3" width="460" height="4" fill="#38BDF8"/>
+    <text x="24" y="34" class="section-label">核心识别规则</text>
+    <text x="24" y="64" class="card-title">按字段键识别重复</text>
+    <text x="24" y="94" class="body-text">插件递归解析 formSchema，提取所有包含 $formkit 和 name 的节点。</text>
+    <rect x="24" y="120" width="412" height="40" rx="8" fill="#020617" stroke="#1E3A5F" stroke-width="1"/>
+    <text x="42" y="142" class="code"><tspan class="code-type">targetRef</tspan> + <tspan class="code-string">annotationKey</tspan> <tspan class="code-out">→ 冲突键</tspan></text>
+    <text x="24" y="188" class="footer-text"><tspan fill="#38BDF8" font-weight="600">看板：</tspan>模型、字段数、来源数、冲突数和现有值数量</text>
+  </g>
+
+  <g transform="translate(670, 506)">
+    <rect x="0" y="0" width="460" height="172" rx="12" fill="#2E1421" stroke="#334155" stroke-width="1" filter="url(#softShadow)"/>
+    <rect x="0" y="0" width="460" height="5" rx="12" fill="#FB7185"/>
+    <rect x="0" y="3" width="460" height="4" fill="#FB7185"/>
+    <text x="24" y="34" class="section-label">安全边界</text>
+    <text x="24" y="64" class="card-title">删除定义 ≠ 删除数据</text>
+    <text x="24" y="94" class="body-text">删除 AnnotationSetting 只影响表单渲染，不会移除已有 annotations。</text>
+    <text x="24" y="126" class="footer-text"><tspan fill="#FB7185" font-weight="600">清理值：</tspan>只移除用户确认的 exact annotation key</text>
+    <text x="24" y="150" class="footer-text"><tspan fill="#FB7185" font-weight="600">不碰：</tspan>labels、finalizers、version 和无关 annotations</text>
+  </g>
+
+  <g transform="translate(670, 708)">
+    <rect x="0" y="0" width="460" height="142" rx="12" fill="#0F2A1F" stroke="#334155" stroke-width="1" filter="url(#softShadow)"/>
+    <rect x="0" y="0" width="460" height="5" rx="12" fill="#34D399"/>
+    <rect x="0" y="3" width="460" height="4" fill="#34D399"/>
+    <text x="24" y="34" class="section-label">推荐使用顺序</text>
+    <g transform="translate(24, 58)">
+      <rect x="0" y="0" width="84" height="24" rx="12" fill="#052E1A" stroke="#34D399" stroke-width="1"/>
+      <text x="42" y="13" class="pill-txt" fill="#6EE7B7">先看来源</text>
+      <rect x="96" y="0" width="84" height="24" rx="12" fill="#052E1A" stroke="#34D399" stroke-width="1"/>
+      <text x="138" y="13" class="pill-txt" fill="#6EE7B7">再删旧定义</text>
+      <rect x="192" y="0" width="84" height="24" rx="12" fill="#052E1A" stroke="#34D399" stroke-width="1"/>
+      <text x="234" y="13" class="pill-txt" fill="#6EE7B7">最后清理值</text>
+    </g>
+    <text x="24" y="110" class="footer-text"><tspan fill="#34D399" font-weight="600">闭环：</tspan>发现问题、解释来源、安全修复、补充字段</text>
+  </g>
+
+  <path d="M600 794 C635 794, 642 794, 670 794" stroke="#34D399" stroke-width="1.8" fill="none" marker-end="url(#arrow-green)"/>
+  <path d="M600 630 C632 630, 642 598, 670 590" stroke="#FBBF24" stroke-width="1.7" fill="none" marker-end="url(#arrow-amber)"/>
+  <path d="M600 466 C632 466, 642 384, 670 362" stroke="#A78BFA" stroke-width="1.7" fill="none" marker-end="url(#arrow-green)"/>
+  <path d="M600 302 C635 302, 642 302, 670 302" stroke="#38BDF8" stroke-width="1.7" fill="none" marker-end="url(#arrow-cyan)"/>
+
+  <text x="600" y="928" class="footer-text" text-anchor="middle"><tspan class="footer-em">一句话：</tspan>这不是“批量删除工具”，而是把元数据字段的来源、冲突和影响范围讲清楚的治理台</text>
+</svg>
